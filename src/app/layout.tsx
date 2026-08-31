@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import "remixicon/fonts/remixicon.css";
 import "./globals.css";
-import { Providers } from "@/components/providers";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -25,30 +24,23 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
-// Fallback metadata for any route that doesn't set its own (the storefront
-// route group below sets its own richer SEO/OG tags; the /admin CRM
-// dashboard is behind auth and doesn't need any).
+// Fallback metadata for any route that doesn't set its own (the (site)
+// route group below sets its own richer SEO/OG tags).
 export const metadata: Metadata = {
   title: "LONGEVITY PEPTIDES · Research Peptides",
   description:
-    "Longevity Peptides — research-grade peptides with public, batch-searchable Certificates of Analysis, and the Command Center CRM/CMS that runs the whole operation.",
+    "Longevity Peptides — research-grade peptides with public, batch-searchable Certificates of Analysis, sourced from WooCommerce.",
 };
 
-// One <html>/<body> for the whole merged app. The buyer-facing storefront
-// used to live here as the (site) route group; it's detached for now (see
-// src/app/_storefront-detached and QUICKSTART.md), a different frontend will
-// consume this app's API instead. The /admin CRM/CMS route group still layers
-// its own themed wrapper (and a `.cc-app` class scoping its color tokens)
-// inside this shared shell via its own nested layout.tsx.
+// One <html>/<body> for the whole app. The (site) route group layers its
+// own themed wrapper on top of this shared shell via its own layout.tsx.
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"
       className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}
     >
-      <body className="antialiased">
-        <Providers>{children}</Providers>
-      </body>
+      <body className="antialiased">{children}</body>
     </html>
   );
 }
