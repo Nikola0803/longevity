@@ -15,7 +15,7 @@
     "db:studio": "prisma studio",
     "db:seed:demo": "tsx prisma/seed-network-demo.ts",
     "db:seed:evlv": "tsx prisma/seed-evlv.ts",
-    "predev": "prisma db push --skip-generate"
+    "predev": "node -e \"if(process.env.DATABASE_URL){process.exit(1)}else{console.log('No DATABASE_URL set — skipping DB sync, storefront-only mode (admin dashboard needs a DB; see .env.example).');process.exit(0)}\" || prisma db push --skip-generate"
   },
   "dependencies": {
     "@prisma/client": "^5.20.0",
