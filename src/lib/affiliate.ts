@@ -1,5 +1,5 @@
 /**
- * Client-side referral-link tracking for the Longevity Peptides Affiliates program.
+ * Client-side referral-link tracking for the Vertalis Affiliates program.
  *
  * A visitor who arrives via an affiliate's link (?ref=CODE) gets a 30-day
  * cookie stamped with that code, matching the vp-affiliates plugin's

@@ -1,8 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactStrictMode: true,
+  experimental: {
+    serverActions: {
+      allowedOrigins: ["localhost:3000", "vertalispeptides.com", "www.vertalispeptides.com"],
+    },
+  },
   images: {
     remotePatterns: [
-      { protocol: "https", hostname: "**" },
+      // Product/CMS images uploaded via /api/admin/upload land here on
+      // Vercel (see route.ts) — next/image needs the host allow-listed.
+      { protocol: "https", hostname: "*.public.blob.vercel-storage.com" },
     ],
   },
 };

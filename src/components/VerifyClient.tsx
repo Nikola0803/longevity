@@ -41,7 +41,7 @@ export default function VerifyClient({ slug }: { slug: string }) {
                 <i className="ri-error-warning-line text-[32px] text-yellow-400 mb-4 block"></i>
                 <h1 className="font-display text-[22px] text-foreground-100 mb-2">Compound not recognized</h1>
                 <p className="text-[13px] text-foreground-500 leading-relaxed mb-6">
-                  This QR code doesn&#39;t match a product in our current catalog. If you scanned this from a Longevity Peptides vial label, contact us with the batch code printed on it and we&#39;ll verify it directly.
+                  This QR code doesn&#39;t match a product in our current catalog. If you scanned this from a Vertalis vial label, contact us with the batch code printed on it and we&#39;ll verify it directly.
                 </p>
                 <Link href="/contact" className="inline-flex items-center gap-2 h-11 px-6 rounded-md bg-primary-500 text-background-900 text-[13px] font-semibold hover:bg-primary-400 transition-all cursor-pointer">
                   Contact Support<i className="ri-arrow-right-line text-[14px]"></i>
@@ -121,7 +121,7 @@ export default function VerifyClient({ slug }: { slug: string }) {
             )}
 
             <p className="mt-6 text-center text-[11px] text-foreground-600 leading-relaxed">
-              Scanned from a Longevity Peptides vial label. <Link href="/coa" className="text-primary-500 hover:text-primary-400 transition-colors">Browse the full COA archive →</Link>
+              Scanned from a Vertalis vial label. <Link href="/coa" className="text-primary-500 hover:text-primary-400 transition-colors">Browse the full COA archive →</Link>
             </p>
           </div>
         </section>

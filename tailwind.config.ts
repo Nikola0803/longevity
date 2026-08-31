@@ -1,13 +1,35 @@
 import type { Config } from "tailwindcss";
 
-// Color tokens read off CSS variables defined once in globals.css (light
-// palette only — no [data-theme] runtime switch, no dark values, no CRM
-// "cc-" scale, since this app has no admin dashboard).
+// Color tokens ported 1:1 from the original readdy.ai mockup so the rebuilt
+// app matches the approved visual design exactly. Each shade references a
+// CSS variable (defined in globals.css) holding raw OKLCH L/C/H components.
+function scale(name: string) {
+  const shades = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950];
+  return Object.fromEntries(
+    shades.map((s) => [s, `oklch(var(--${name}-${s}) / <alpha-value>)`])
+  );
+}
+
 const config: Config = {
-  content: ["./src/**/*.{ts,tsx}"],
+  content: [
+    "./src/**/*.{ts,tsx}",
+    "./data/**/*.{ts,tsx}",
+  ],
   theme: {
     extend: {
       colors: {
+        // CRM/CMS dashboard palette — prefixed "cc-" (Command Center) so
+        // these coexist with the Vertalis storefront's own `background`/
+        // `foreground`/`primary`/etc tokens below without either theme
+        // clobbering the other now that both live in one Tailwind config.
+        "cc-background": scale("cc-background"),
+        "cc-foreground": scale("cc-foreground"),
+        "cc-primary": scale("cc-primary"),
+        "cc-secondary": scale("cc-secondary"),
+        "cc-accent": scale("cc-accent"),
+
+        // Vertalis storefront palette (see globals.css :root / [data-theme]
+        // for the runtime-swappable --bg-*/--fg-*/etc custom properties).
         background: {
           100: "rgb(var(--bg-100) / <alpha-value>)",
           200: "rgb(var(--bg-200) / <alpha-value>)",
@@ -38,6 +60,8 @@ const config: Config = {
         signal: "rgb(var(--signal) / <alpha-value>)",
       },
       fontFamily: {
+        body: ["var(--font-body)"],
+        heading: ["var(--font-heading)"],
         mono: ["var(--font-jetbrains-mono)", "var(--font-mono)", "ui-monospace", "monospace"],
         sans: ["var(--font-inter)", "sans-serif"],
         display: ["var(--font-space-grotesk)", "var(--font-inter)", "sans-serif"],
