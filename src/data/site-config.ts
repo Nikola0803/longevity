@@ -33,7 +33,7 @@ export const SITE = {
   governingLaw:
     "the laws of the jurisdiction in which Longevity Peptides is organised, without regard to conflict-of-law provisions",
   /** Where you ship to, plain language for the Shipping policy */
-  shipsTo: "the United States", // TODO adjust to your actual fulfilment regions
+  shipsTo: "Australia and New Zealand",
   /** Typical order handling time */
   handlingTime: "1–2 business days",
 
@@ -43,12 +43,6 @@ export const SITE = {
   /* --- Payment receiving details, shown at checkout once a gateway is
      selected. Leave a field blank and its checkout panel shows a
      "confirmed by email" fallback instead of blank/fake info. --- */
-  paymentHandles: {
-    venmo: "", // TODO e.g. "@Longevity Peptides-Peptides"
-    cashapp: "", // TODO e.g. "$Longevity PeptidesPeptides"
-    zelle: "", // TODO e.g. "payments@longevitypeptides.com" or a phone number
-  },
-
   /* --- Live chat. Leave whatsappNumber "" and the floating WhatsApp
      button routes to /contact instead of a wa.me link, so it never
      points at a wrong or fake number. --- */

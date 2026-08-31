@@ -98,12 +98,12 @@ export default function ContactPage() {
               ))}
               <div className="p-5 rounded-xl bg-background-900/70 border border-background-200/60">
                 <h3 className="font-display text-[15px] text-foreground-100 mb-3">Payment Methods</h3>
-                <div className="flex gap-2">
-                  <span className="px-3 py-1.5 rounded-md border border-[#6D1ED4]/40 text-[#8B5CF6] bg-[#6D1ED4]/10 text-[11px] font-semibold">Zelle</span>
-                  <span className="px-3 py-1.5 rounded-md border border-[#00D632]/30 text-[#00D632] bg-[#00D632]/10 text-[11px] font-semibold">Cash App</span>
-                  <span className="px-3 py-1.5 rounded-md border border-[#008AFF]/30 text-[#008AFF] bg-[#008AFF]/10 text-[11px] font-semibold">Venmo</span>
+                <div className="flex items-center gap-2.5 text-foreground-500">
+                  <i className="ri-visa-line text-[22px]"></i>
+                  <i className="ri-mastercard-line text-[22px]"></i>
+                  <span className="px-3 py-1.5 rounded-md border border-background-200 text-foreground-400 text-[11px] font-semibold">AMEX</span>
                 </div>
-                <p className="mt-3 text-[12px] text-foreground-500">Include your order reference in payment notes for fastest dispatch.</p>
+                <p className="mt-3 text-[12px] text-foreground-500">All major credit and debit cards accepted, processed securely at checkout.</p>
               </div>
             </div>
           </div>

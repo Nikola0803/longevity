@@ -15,21 +15,12 @@ const FG_DIM = "rgb(var(--fg-100) / 0.48)";
 
 export default function HeroSection() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [isLight, setIsLight] = useState(false);
+  // This app has one theme (light) — no [data-theme] switch exists anymore,
+  // so this is no longer a runtime toggle, just a constant selecting the
+  // light-mode video/gradient branch below.
+  const isLight = true;
   const [isUltrawide, setIsUltrawide] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-
-  // The 3D vial render is tuned for the dark theme's glow; on the white
-  // theme we swap it for the pre-rendered white-mode intro video instead.
-  // Tracks [data-theme] on <html> (same mechanism ThemeToggle writes to)
-  // so it stays in sync if the user flips themes without a reload.
-  useEffect(() => {
-    const read = () => setIsLight(document.documentElement.getAttribute("data-theme") === "light");
-    read();
-    const observer = new MutationObserver(read);
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
-    return () => observer.disconnect();
-  }, []);
 
   // Ultrawide monitors (21:9, 32:9) get a clip shot with far more empty
   // space around the vial so it doesn't crop or upscale-blur the way a
@@ -142,7 +133,7 @@ export default function HeroSection() {
             ? "/videos/hero-intro-white-01.mp4"
             : isMobile
             ? "/videos/mobile-vertalis-dark-hero.mp4"
-            : "/videos/Longevity Peptides-peptides-video-latest-dark-bg.mp4"
+            : "/videos/Vertalis-peptides-video-latest-dark-bg.mp4"
         }
         autoPlay
         muted

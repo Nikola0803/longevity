@@ -1,5 +1,5 @@
 export type ShippingMethod = "standard" | "expedited" | "overnight" | "international";
-export type ShipCountry = "US" | "CA" | "GB";
+export type ShipCountry = "AU" | "NZ";
 
 export interface ShippingRates {
   freeThresholdCents: number;
@@ -17,28 +17,28 @@ export const DEFAULT_SHIPPING_RATES: ShippingRates = {
   internationalCents: 7500,
 };
 
-// Outside the US it's always DHL, always a flat rate — no free-shipping
-// threshold, no expedited/overnight tiers. Domestic (US) keeps the
-// standard/expedited/overnight structure.
+// Australia is the domestic market (standard/expedited/overnight tiers);
+// New Zealand ships as a flat international rate — matching how the
+// original longevity-peps region store treated AU as the primary market.
 export function priceShippingMethod(
   method: ShippingMethod,
   subtotalCents: number,
   rates: ShippingRates,
-  country: ShipCountry = "US"
+  country: ShipCountry = "AU"
 ): number {
-  if (country !== "US") return rates.internationalCents;
+  if (country !== "AU") return rates.internationalCents;
   if (method === "expedited") return rates.expeditedCents;
   if (method === "overnight") return rates.overnightCents;
   return subtotalCents >= rates.freeThresholdCents ? 0 : rates.standardCents;
 }
 
-export function shippingOptions(subtotalCents: number, rates: ShippingRates, country: ShipCountry = "US") {
-  if (country !== "US") {
+export function shippingOptions(subtotalCents: number, rates: ShippingRates, country: ShipCountry = "AU") {
+  if (country !== "AU") {
     return [
       {
         id: "international" as const,
-        label: "International (DHL)",
-        note: "Flat rate, outside the US",
+        label: "International",
+        note: "Flat rate, outside Australia",
         cents: rates.internationalCents,
       },
     ];
@@ -53,13 +53,13 @@ export function shippingOptions(subtotalCents: number, rates: ShippingRates, cou
     {
       id: "expedited" as const,
       label: "Expedited",
-      note: "FedEx 2-Day",
+      note: "2-Day",
       cents: priceShippingMethod("expedited", subtotalCents, rates, country),
     },
     {
       id: "overnight" as const,
       label: "Overnight",
-      note: "FedEx, within 24h · US only",
+      note: "Within 24h · AU only",
       cents: priceShippingMethod("overnight", subtotalCents, rates, country),
     },
   ];

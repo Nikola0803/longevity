@@ -47,14 +47,6 @@ function NavCol({ title, links }: { title: string; links: { label: string; href:
   );
 }
 
-// Payment method badge component
-function PayBadge({ label, color }: { label: string; color: string }) {
-  return (
-    <span className={`inline-flex items-center px-2.5 py-1 rounded-md border text-[11px] font-semibold tracking-wide ${color}`}>
-      {label}
-    </span>
-  );
-}
 
 export default function SiteFooter() {
   return (
@@ -112,7 +104,7 @@ export default function SiteFooter() {
               <span className="font-mono text-[11px] tracking-[0.18em] text-accent-300 uppercase">Research Use Only</span>
             </div>
             <p className="text-[12px] text-foreground-500 leading-relaxed flex-1">
-              All products sold on this website are intended for research and identification purposes only. These products are not intended for human dosing, injection, or ingestion. The statements made on this website have not been evaluated by the US Food and Drug Administration. The statements and the products of this company are not intended to diagnose, treat, cure, or prevent any disease. Longevity Peptides is a chemical supplier, not a compounding pharmacy or outsourcing facility as defined under 503A or 503B of the Federal Food, Drug, and Cosmetic Act.
+              All products sold on this website are intended for research and identification purposes only. These products are not intended for human dosing, injection, or ingestion. The statements made on this website have not been evaluated by the Therapeutic Goods Administration (TGA). The statements and the products of this company are not intended to diagnose, treat, cure, or prevent any disease. Longevity Peptides is a chemical supplier, not a compounding pharmacy or dispensing facility.
             </p>
           </div>
         </div>
@@ -128,11 +120,10 @@ export default function SiteFooter() {
             <span className="w-px h-3 bg-background-300"></span>
             <span className="text-[11px] font-mono text-foreground-400">ANRESCO</span>
           </div>
-          {/* Payment methods: Zelle, CashApp, Venmo only */}
-          <div className="flex items-center gap-2">
-            <PayBadge label="Zelle" color="border-[#6D1ED4]/40 text-[#8B5CF6] bg-[#6D1ED4]/10" />
-            <PayBadge label="Cash App" color="border-[#00D632]/30 text-[#00D632] bg-[#00D632]/10" />
-            <PayBadge label="Venmo" color="border-[#008AFF]/30 text-[#008AFF] bg-[#008AFF]/10" />
+          {/* Payment methods: credit/debit card */}
+          <div className="flex items-center gap-2 text-foreground-500">
+            <i className="ri-visa-line text-[20px]"></i>
+            <i className="ri-mastercard-line text-[20px]"></i>
           </div>
         </div>
       </div>
