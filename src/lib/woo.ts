@@ -1,17 +1,17 @@
 import "server-only";
 import type { Product } from "./product-types";
-import { defaultPacks, statusFor } from "./product-types";
 import { FALLBACK_PRODUCTS } from "@/data/products";
 
 /**
- * Standard WooCommerce REST API v3 client (store's own consumer key/secret —
- * NOT the Lovable connector-gateway longevity-peps used, which only works
- * inside Lovable's own hosting). Configure via env:
+ * Standard WooCommerce REST API v3 client — your store's own consumer
+ * key/secret (longevity-peps' Woo integration only worked through
+ * Lovable.dev's private connector gateway, which isn't usable here).
+ * Configure via env:
  *   WOO_STORE_URL=https://yourstore.com
  *   WOO_CONSUMER_KEY=ck_...
  *   WOO_CONSUMER_SECRET=cs_...
- * If unset or the request fails, callers fall back to FALLBACK_PRODUCTS so
- * the site never shows an empty shop.
+ * Unset, or a failed request, falls back to FALLBACK_PRODUCTS
+ * (src/data/products.ts) so the shop is never empty.
  */
 
 interface WooImage {
@@ -40,7 +40,6 @@ interface WooProduct {
   categories: Array<{ name: string }>;
   images: WooImage[];
   variations?: number[];
-  attributes?: Array<{ name: string; options: string[] }>;
 }
 
 const CATALOG_TTL_MS = 60_000;
@@ -69,9 +68,13 @@ function stripHtml(html: string): string {
     .trim();
 }
 
-/** Splits a WooCommerce variable product's variations into dose groups, each
- * carrying its own 1x/10x pack ladder (matched by a "Pack"/"Qty" attribute
- * when present, else synthesized via defaultPacks). */
+const IN_STOCK = "text-secondary-500 shadow-[0_0_5px_1px_currentColor]";
+const OUT_OF_STOCK = "text-signal shadow-[0_0_5px_1px_currentColor]";
+
+/** Splits a variable product's variations into dose entries (one Product per
+ * dose/spec, matching the site's existing "spec variant" model — pack-count
+ * (1x/10x) rides along as a Woo attribute matched by /pack|qty|quantity/i,
+ * folded into the price via the selected variation directly). */
 function adaptWooProduct(p: WooProduct, variations: WooVariation[]): Product[] {
   const category = p.categories[0]?.name ?? "Peptides";
   const description = stripHtml(p.description || p.short_description || "");
@@ -89,70 +92,49 @@ function adaptWooProduct(p: WooProduct, variations: WooVariation[]): Product[] {
         price,
         image,
         images,
-        imgAlt: p.name,
+        imgAlt: `${p.name} research peptide vial`,
         imgTitle: p.name,
         category,
         purity: "",
         description,
         sku: p.sku,
-        wooProductId: p.id,
-        packs: defaultPacks(price),
-        ...statusFor(inStock),
+        statusDot: inStock ? IN_STOCK : OUT_OF_STOCK,
+        statusLabel: inStock ? "In Stock" : "Backordered",
+        disabled: !inStock,
+        buttonText: inStock ? "Add to Cart" : "Unavailable",
       },
     ];
   }
 
-  // Group variations by dose (any attribute matching mg/mL/g), pack qty
-  // (an attribute matching "pack"/"qty"/"x10") folds into that dose's packs[].
-  const doseGroups = new Map<string, WooVariation[]>();
-  for (const v of variations) {
-    const doseAttr =
-      v.attributes.find((a) => /dose|size|spec/i.test(a.name))?.option ??
-      v.attributes.find((a) => /mg|ml|g\b/i.test(a.option))?.option ??
-      "Default";
-    const arr = doseGroups.get(doseAttr) ?? [];
-    arr.push(v);
-    doseGroups.set(doseAttr, arr);
-  }
-
-  return Array.from(doseGroups.entries()).map(([dose, vars]) => {
-    const packAttr = (v: WooVariation) =>
-      v.attributes.find((a) => /pack|qty|quantity/i.test(a.name))?.option ?? "1";
-    const packQty = (raw: string) => {
-      const m = raw.match(/(\d+)/);
-      return m ? parseInt(m[1], 10) : 1;
-    };
-    const sorted = [...vars].sort((a, b) => packQty(packAttr(a)) - packQty(packAttr(b)));
-    const packs = sorted.map((v) => ({
-      qty: packQty(packAttr(v)),
-      price: parseFloat(v.price || v.regular_price || "0"),
-      wooVariationId: v.id,
-      sku: v.sku,
-    }));
-    const unitPrice = packs.find((pk) => pk.qty === 1)?.price ?? packs[0]?.price ?? 0;
-    const inStock = vars.some((v) => v.stock_status === "instock");
-    const slugSuffix = dose === "Default" ? "" : `-${dose.toLowerCase().replace(/\s+/g, "")}`;
+  return variations.map((v) => {
+    const spec =
+      v.attributes.find((a) => /dose|size|spec|pack|qty|quantity/i.test(a.name))?.option ??
+      v.attributes.map((a) => a.option).join(" / ");
+    const price = parseFloat(v.price || v.regular_price || "0");
+    const inStock = v.stock_status === "instock";
+    const slugSuffix = spec ? `-${spec.toLowerCase().replace(/\s+/g, "")}` : "";
     return {
       slug: `${p.slug}${slugSuffix}`,
       name: p.name,
-      spec: dose === "Default" ? "" : dose,
-      price: unitPrice,
+      spec,
+      price,
       image,
       images,
-      imgAlt: `${p.name} ${dose}`.trim(),
-      imgTitle: `${p.name} · ${dose}`.trim(),
+      imgAlt: `${p.name} ${spec} research peptide vial`.trim(),
+      imgTitle: `${p.name} · ${spec}`.trim(),
       category,
       purity: "",
       description,
-      sku: sorted[0]?.sku || p.sku,
-      wooProductId: p.id,
-      packs: packs.length > 1 || packs[0]?.qty !== 1 ? packs : defaultPacks(unitPrice),
-      ...statusFor(inStock),
+      sku: v.sku || p.sku,
+      statusDot: inStock ? IN_STOCK : OUT_OF_STOCK,
+      statusLabel: inStock ? "In Stock" : "Backordered",
+      disabled: !inStock,
+      buttonText: inStock ? "Add to Cart" : "Unavailable",
     };
   });
 }
 
-export async function getProducts(): Promise<Product[]> {
+export async function getAllCatalogProducts(): Promise<Product[]> {
   if (!wooConfigured()) return FALLBACK_PRODUCTS;
   if (cache && Date.now() - cache.at < CATALOG_TTL_MS) return cache.products;
 
@@ -175,13 +157,11 @@ export async function getProducts(): Promise<Product[]> {
     cache = { at: Date.now(), products };
     return products;
   } catch {
-    // Woo unreachable/misconfigured — serve the hardcoded catalog instead
-    // of an empty shop.
     return FALLBACK_PRODUCTS;
   }
 }
 
-export async function getProductBySlug(slug: string): Promise<Product | undefined> {
-  const products = await getProducts();
-  return products.find((p) => p.slug === slug);
+export async function getCatalogProductBySlug(slug: string): Promise<Product | null> {
+  const products = await getAllCatalogProducts();
+  return products.find((p) => p.slug === slug) ?? null;
 }

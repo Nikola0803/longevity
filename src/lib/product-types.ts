@@ -1,23 +1,12 @@
 /**
- * Shared storefront product shape — ported from Vertalis's product-types.ts.
- * Extended with `packs`: pack-count variants (1x / 10x of the same dose) are
- * modeled alongside dose variants (e.g. BPC-157 5mg vs 10mg), matching how
- * longevity-peps' catalog is actually sold (dose choice, then pack quantity).
+ * Shared storefront product shape. Identical to the shape the original
+ * Longevity Peptides `data/products.ts` static file exported, so every component
+ * ported from that app keeps working unchanged — only where the data
+ * comes from has moved (Postgres via the CRM/CMS, not a hardcoded array).
  */
-export interface PackOption {
-  /** e.g. 1 or 10 */
-  qty: number;
-  /** Absolute price for this pack (not per-unit) */
-  price: number;
-  /** WooCommerce variation id, when sourced live */
-  wooVariationId?: number;
-  sku?: string;
-}
-
 export interface Product {
   slug: string;
   name: string;
-  /** Dose/spec label, e.g. "5mg", "10mg", "30mL" */
   spec: string;
   price: number;
   image: string;
@@ -37,16 +26,63 @@ export interface Product {
   description?: string;
   shortDescription?: string;
   sku?: string;
+  /** Most recent real lab CoaDocument for this product, if one has been uploaded. */
   coaUrl?: string;
   coaBatchLabel?: string;
-  /** Pack-count variants (1x / 10x) at this dose. When present, `price` is the 1x price. */
-  packs?: PackOption[];
-  wooProductId?: number;
 }
 
 const IN_STOCK = "text-secondary-500 shadow-[0_0_5px_1px_currentColor]";
 const OUT_OF_STOCK = "text-signal shadow-[0_0_5px_1px_currentColor]";
 
+/** Maps a raw DB row (see lib/catalog.ts) onto the presentational Product shape. */
+export function toProductView(row: {
+  slug: string | null;
+  name: string | null;
+  spec: string | null;
+  priceCents: number | null;
+  images: unknown;
+  category: string | null;
+  purity: string | null;
+  inStock: boolean;
+  hidden: boolean;
+  description: string | null;
+  shortDescription: string | null;
+  sku: string;
+  coas?: { url: string; label: string | null; createdAt: Date }[];
+}): Product {
+  const latestCoa = row.coas && row.coas.length > 0
+    ? [...row.coas].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())[0]
+    : null;
+  const images = Array.isArray(row.images) ? (row.images as string[]) : [];
+  const image = images[0] ?? "/images/placeholder.png";
+  const name = row.name ?? row.sku;
+  return {
+    slug: row.slug ?? row.sku,
+    name,
+    spec: row.spec ?? "",
+    price: (row.priceCents ?? 0) / 100,
+    image,
+    images,
+    imgAlt: `${name} research peptide vial ${row.spec ?? ""}`.trim(),
+    imgTitle: `${name} · ${row.spec ?? ""}`.trim(),
+    category: row.category ?? "Peptides",
+    statusDot: row.inStock ? IN_STOCK : OUT_OF_STOCK,
+    statusLabel: row.inStock ? "In Stock" : "Backordered",
+    purity: row.purity ?? "",
+    disabled: !row.inStock,
+    buttonText: row.inStock ? "Add to Cart" : "Unavailable",
+    footClass: null,
+    footText: null,
+    hidden: row.hidden,
+    description: row.description ?? undefined,
+    shortDescription: row.shortDescription ?? undefined,
+    sku: row.sku,
+    coaUrl: latestCoa?.url,
+    coaBatchLabel: latestCoa?.label ?? undefined,
+  };
+}
+
+/** Deterministic aggregate star rating + review count fallback for products with no real reviews yet. */
 export function getRating(product: Product): { stars: number; count: number } {
   let hash = 0;
   for (let i = 0; i < product.slug.length; i++) {
@@ -57,14 +93,14 @@ export function getRating(product: Product): { stars: number; count: number } {
   return { stars, count };
 }
 
-/** All dose/spec variants that share a product name, sorted smallest to largest. */
+/** All size/variant entries that share a product name, sorted smallest to largest dose. */
 export function getVariants(products: Product[], name: string): Product[] {
   return products
     .filter((p) => p.name === name)
     .sort((a, b) => parseFloat(a.spec) - parseFloat(b.spec));
 }
 
-/** Compact pill label for a dose variant, e.g. "5mg", "10mg", "30mL". */
+/** Compact pill label for a variant, e.g. "5mg", "10mg", "30mL". */
 export function getVariantLabel(p: Product): string {
   if (p.shortLabel) return p.shortLabel.replace(/\s+/g, "");
   const match = p.spec.match(/^([\d.]+)\s*(mg|mL|g)/i);
@@ -73,23 +109,4 @@ export function getVariantLabel(p: Product): string {
 
 export function getProduct(products: Product[], slug: string): Product | undefined {
   return products.find((p) => p.slug === slug);
-}
-
-/** In-stock/status pair for a given availability flag. */
-export function statusFor(inStock: boolean) {
-  return {
-    statusDot: inStock ? IN_STOCK : OUT_OF_STOCK,
-    statusLabel: inStock ? "In Stock" : "Backordered",
-    disabled: !inStock,
-    buttonText: inStock ? "Add to Cart" : "Unavailable",
-  };
-}
-
-/** Default pack ladder used when a product has no explicit pack pricing:
- * 10x priced at a ~12% per-unit discount vs a flat 1x multiple. */
-export function defaultPacks(unitPrice: number): PackOption[] {
-  return [
-    { qty: 1, price: Math.round(unitPrice) },
-    { qty: 10, price: Math.round(unitPrice * 10 * 0.88) },
-  ];
 }

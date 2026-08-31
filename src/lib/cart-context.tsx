@@ -13,7 +13,6 @@ export interface CartItem {
   slug: string;
   name: string;
   spec: string;
-  packQty: number;
   price: number;
   image: string;
   qty: number;
@@ -27,17 +26,14 @@ interface CartContextValue {
   openCart: () => void;
   closeCart: () => void;
   addItem: (item: Omit<CartItem, "qty">, qty?: number) => void;
-  removeItem: (slug: string, packQty: number) => void;
-  setQty: (slug: string, packQty: number, qty: number) => void;
+  removeItem: (slug: string) => void;
+  setQty: (slug: string, qty: number) => void;
   clearCart: () => void;
 }
 
 const CartContext = createContext<CartContextValue | null>(null);
-const STORAGE_KEY = "longevity-cart";
 
-function lineKey(slug: string, packQty: number) {
-  return `${slug}::${packQty}`;
-}
+const STORAGE_KEY = "vertalis-cart";
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
@@ -62,40 +58,55 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const openCart = useCallback(() => setIsOpen(true), []);
   const closeCart = useCallback(() => setIsOpen(false), []);
 
-  const addItem = useCallback((item: Omit<CartItem, "qty">, qty: number = 1) => {
-    setItems((prev) => {
-      const key = lineKey(item.slug, item.packQty);
-      const existing = prev.find((i) => lineKey(i.slug, i.packQty) === key);
-      if (existing) {
-        return prev.map((i) =>
-          lineKey(i.slug, i.packQty) === key ? { ...i, qty: i.qty + qty } : i
-        );
-      }
-      return [...prev, { ...item, qty }];
-    });
-    setIsOpen(true);
+  const addItem = useCallback(
+    (item: Omit<CartItem, "qty">, qty: number = 1) => {
+      setItems((prev) => {
+        const existing = prev.find((i) => i.slug === item.slug);
+        if (existing) {
+          return prev.map((i) =>
+            i.slug === item.slug ? { ...i, qty: i.qty + qty } : i
+          );
+        }
+        return [...prev, { ...item, qty }];
+      });
+      setIsOpen(true);
+    },
+    []
+  );
+
+  const removeItem = useCallback((slug: string) => {
+    setItems((prev) => prev.filter((i) => i.slug !== slug));
   }, []);
 
-  const removeItem = useCallback((slug: string, packQty: number) => {
-    setItems((prev) => prev.filter((i) => lineKey(i.slug, i.packQty) !== lineKey(slug, packQty)));
-  }, []);
-
-  const setQty = useCallback((slug: string, packQty: number, qty: number) => {
-    const key = lineKey(slug, packQty);
+  const setQty = useCallback((slug: string, qty: number) => {
     setItems((prev) =>
       qty <= 0
-        ? prev.filter((i) => lineKey(i.slug, i.packQty) !== key)
-        : prev.map((i) => (lineKey(i.slug, i.packQty) === key ? { ...i, qty } : i))
+        ? prev.filter((i) => i.slug !== slug)
+        : prev.map((i) => (i.slug === slug ? { ...i, qty } : i))
     );
   }, []);
 
   const clearCart = useCallback(() => setItems([]), []);
 
   const count = useMemo(() => items.reduce((n, i) => n + i.qty, 0), [items]);
-  const subtotal = useMemo(() => items.reduce((n, i) => n + i.qty * i.price, 0), [items]);
+  const subtotal = useMemo(
+    () => items.reduce((n, i) => n + i.qty * i.price, 0),
+    [items]
+  );
 
   const value = useMemo(
-    () => ({ items, isOpen, count, subtotal, openCart, closeCart, addItem, removeItem, setQty, clearCart }),
+    () => ({
+      items,
+      isOpen,
+      count,
+      subtotal,
+      openCart,
+      closeCart,
+      addItem,
+      removeItem,
+      setQty,
+      clearCart,
+    }),
     [items, isOpen, count, subtotal, openCart, closeCart, addItem, removeItem, setQty, clearCart]
   );
 

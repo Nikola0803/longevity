@@ -1,8 +1,8 @@
 import type { Config } from "tailwindcss";
 
-// Color tokens read off CSS variables defined once in globals.css. There is
-// only one palette (light) — unlike the source Vertalis app, there is no
-// [data-theme="dark"] override and no runtime toggle.
+// Color tokens read off CSS variables defined once in globals.css (light
+// palette only — no [data-theme] runtime switch, no dark values, no CRM
+// "cc-" scale, since this app has no admin dashboard).
 const config: Config = {
   content: ["./src/**/*.{ts,tsx}"],
   theme: {
@@ -38,16 +38,29 @@ const config: Config = {
         signal: "rgb(var(--signal) / <alpha-value>)",
       },
       fontFamily: {
-        sans: ["var(--font-inter)", "system-ui", "sans-serif"],
+        mono: ["var(--font-jetbrains-mono)", "var(--font-mono)", "ui-monospace", "monospace"],
+        sans: ["var(--font-inter)", "sans-serif"],
         display: ["var(--font-space-grotesk)", "var(--font-inter)", "sans-serif"],
       },
-      borderRadius: {
-        DEFAULT: "0.5rem",
+      letterSpacing: {
+        tightest: "-0.04em",
+      },
+      transitionTimingFunction: {
+        precision: "cubic-bezier(0.16, 1, 0.3, 1)",
       },
       keyframes: {
+        blink: {
+          "0%, 50%": { opacity: "1" },
+          "51%, 100%": { opacity: "0" },
+        },
         "fade-up": {
           "0%": { opacity: "0", transform: "translateY(24px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "scan-line": {
+          "0%": { opacity: "0", transform: "translateY(-100%)" },
+          "20%": { opacity: "1" },
+          "100%": { opacity: "0", transform: "translateY(400%)" },
         },
         slideInRight: {
           "0%": { transform: "translateX(100%)" },
@@ -55,8 +68,15 @@ const config: Config = {
         },
       },
       animation: {
+        blink: "blink 1s step-end infinite",
         "fade-up": "fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) both",
+        "scan-line": "scan-line 2.4s ease-in-out infinite",
         "slide-in": "slideInRight 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards",
+        "spin-slow": "spin 24s linear infinite",
+        "spin-slower": "spin 40s linear infinite",
+      },
+      borderRadius: {
+        DEFAULT: "0.5rem",
       },
     },
   },

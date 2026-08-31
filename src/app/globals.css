@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 /* ---------------------------------------------------------------------- */
-/* Theme tokens · ported from Vertalis's [data-theme="light"] palette.
-   This app has only one palette — no dark mode, no toggle, no [data-theme]
+/* Theme tokens — ported from Longevity Peptides's [data-theme="light"] palette. This
+   app has only one palette: no dark mode, no toggle, no [data-theme]
    attribute. Values are space-separated RGB triplets so Tailwind can compose
    them as "rgb(var(--x) / <alpha-value>)" and opacity modifiers keep
    working. ------------------------------------------------------------- */
@@ -31,10 +31,16 @@
   --platinum-3: 63 81 91;
 }
 
-/* Photo darkening overlays wash out to white on this light palette, so they
-   stay off — kept as a class in case a component still applies it. */
+/* Photo darkening overlays wash out to white on this light palette. */
 .photo-fade {
   opacity: 0;
+}
+
+.theme-only-dark {
+  display: none;
+}
+.theme-only-light {
+  display: block;
 }
 
 .cat-card-scrim {
@@ -66,6 +72,16 @@
     transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
   }
 
+  .noise:before {
+    content: "";
+    pointer-events: none;
+    opacity: 0.03;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+    position: absolute;
+    inset: 0;
+  }
+
   .glass {
     -webkit-backdrop-filter: blur(14px);
     backdrop-filter: blur(14px);
@@ -87,6 +103,26 @@
       0 0 26px -8px rgb(var(--primary-500) / 0.22);
   }
 
+  .text-platinum {
+    background: linear-gradient(rgb(var(--platinum-1)) 0%, rgb(var(--platinum-2)) 45%, rgb(var(--platinum-3)) 100%);
+    color: #0000;
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+
+  .molecule-bg {
+    background-image:
+      radial-gradient(circle at 20% 30%, rgb(var(--primary-500) / 0.08) 0%, transparent 40%),
+      radial-gradient(circle at 80% 70%, rgb(var(--primary-500) / 0.06) 0%, transparent 45%);
+  }
+
+  .grid-overlay {
+    background-image:
+      linear-gradient(rgb(var(--primary-500) / 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(var(--primary-500) / 0.05) 1px, transparent 1px);
+    background-size: 56px 56px;
+  }
+
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
@@ -96,6 +132,7 @@
   }
 }
 
+/* Honeypot spam-trap fields: must never be visible */
 .hp-field {
   position: absolute;
   left: -9999px;

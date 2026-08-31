@@ -1,40 +1,73 @@
-import { notFound } from "next/navigation";
-import Image from "next/image";
-import { getProducts, getProductBySlug } from "@/lib/woo";
-import { getVariants, getRating } from "@/lib/product-types";
-import ProductCard from "@/components/ProductCard";
-import StarRating from "@/components/StarRating";
+import type { Metadata } from "next";
+import ProductPageClient from "@/components/ProductPageClient";
+import { getAllCatalogProducts, getCatalogProductBySlug } from "@/lib/woo";
+import { getRating } from "@/lib/product-types";
+
+const SITE_URL = "https://longevitypeptides.com";
+
+export const dynamic = "force-dynamic";
+
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const product = await getCatalogProductBySlug(params.slug);
+  if (!product) return {};
+
+  const title = `${product.name} (${product.spec}) · ${product.purity} Purity`;
+  const description =
+    product.description ||
+    `${product.name} (${product.spec}) research peptide, ${product.purity} purity, independently third-party tested.`;
+  const url = `${SITE_URL}/product/${product.slug}`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      type: "website",
+      url,
+      title,
+      description,
+      images: [{ url: product.image, width: 800, height: 1000, alt: product.imgAlt }],
+    },
+    twitter: { card: "summary_large_image", title, description, images: [product.image] },
+  };
+}
 
 export default async function ProductPage({ params }: { params: { slug: string } }) {
-  const [product, allProducts] = await Promise.all([getProductBySlug(params.slug), getProducts()]);
-  if (!product) notFound();
+  const { slug } = params;
+  const products = await getAllCatalogProducts();
+  const product = products.find((p) => p.slug === slug);
 
-  const rating = getRating(product);
-  const variants = getVariants(allProducts, product.name);
+  const jsonLd = product
+    ? {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        name: `${product.name} (${product.spec})`,
+        description:
+          product.description ??
+          `${product.name} (${product.spec}) research peptide, ${product.purity} purity, independently third-party tested.`,
+        image: `${SITE_URL}${product.image}`,
+        sku: product.slug.toUpperCase(),
+        brand: { "@type": "Brand", name: "LONGEVITY PEPTIDES" },
+        offers: {
+          "@type": "Offer",
+          url: `${SITE_URL}/product/${product.slug}`,
+          priceCurrency: "USD",
+          price: product.price,
+          availability: product.disabled ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
+        },
+        aggregateRating: (() => {
+          const r = getRating(product);
+          return { "@type": "AggregateRating", ratingValue: r.stars, reviewCount: r.count };
+        })(),
+      }
+    : null;
 
   return (
-    <main className="px-6 md:px-10 py-16 max-w-[1440px] mx-auto">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-        <div className="relative aspect-square rounded-xl overflow-hidden bg-background-100">
-          <Image src={product.image} alt={product.imgAlt} fill className="object-cover" />
-        </div>
-        <div>
-          <span className="inline-block px-2 py-0.5 mb-3 rounded-md bg-background-100 font-mono text-[10px] tracking-wider text-foreground-500 uppercase">
-            {product.category}
-          </span>
-          <h1 className="font-display text-[32px] text-foreground-100 mb-2">{product.name}</h1>
-          <StarRating stars={rating.stars} count={rating.count} />
-          <p className="text-[14px] text-foreground-400 leading-relaxed mt-5 mb-8">{product.description}</p>
-          <div className="max-w-sm">
-            <ProductCard product={product} allProducts={allProducts} />
-          </div>
-          {variants.length > 1 && (
-            <p className="text-[12px] text-foreground-500 mt-4">
-              Also available in: {variants.filter((v) => v.slug !== product.slug).map((v) => v.spec).join(", ")}
-            </p>
-          )}
-        </div>
-      </div>
-    </main>
+    <>
+      {jsonLd && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      )}
+      <ProductPageClient slug={slug} />
+    </>
   );
 }
