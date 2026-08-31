@@ -1,0 +1,165 @@
+import type { Product } from "@/lib/product-types";
+import { defaultPacks, statusFor } from "@/lib/product-types";
+
+/**
+ * Hardcoded fallback catalog — serves the shop when WooCommerce is
+ * unreachable or unconfigured (see src/lib/woo.ts), so the site never shows
+ * an empty shop. Product names/categories are carried over from
+ * longevity-peps' catalog; PRICES ARE PLACEHOLDERS and must be replaced with
+ * real values from your WooCommerce store before launch.
+ */
+
+function peptide(opts: {
+  name: string;
+  slug: string;
+  spec: string;
+  unitPrice: number;
+  category?: string;
+  description: string;
+}): Product {
+  return {
+    slug: opts.slug,
+    name: opts.name,
+    spec: opts.spec,
+    price: opts.unitPrice,
+    image: "/images/placeholder.png",
+    imgAlt: `${opts.name} ${opts.spec} research vial`,
+    imgTitle: `${opts.name} · ${opts.spec}`,
+    category: opts.category ?? "Peptides",
+    purity: "≥99% (HPLC)",
+    description: opts.description,
+    packs: defaultPacks(opts.unitPrice),
+    ...statusFor(true),
+  };
+}
+
+export const FALLBACK_PRODUCTS: Product[] = [
+  peptide({
+    name: "BPC-157",
+    slug: "bpc-157-5mg",
+    spec: "5mg",
+    unitPrice: 45,
+    description: "Body Protection Compound, a synthetic peptide fragment studied for tissue repair research.",
+  }),
+  peptide({
+    name: "BPC-157",
+    slug: "bpc-157-10mg",
+    spec: "10mg",
+    unitPrice: 79,
+    description: "Body Protection Compound, a synthetic peptide fragment studied for tissue repair research.",
+  }),
+  peptide({
+    name: "TB-500",
+    slug: "tb-500-5mg",
+    spec: "5mg",
+    unitPrice: 49,
+    description: "Thymosin Beta-4 fragment, studied for research into cell migration and repair.",
+  }),
+  peptide({
+    name: "TB-500",
+    slug: "tb-500-10mg",
+    spec: "10mg",
+    unitPrice: 85,
+    description: "Thymosin Beta-4 fragment, studied for research into cell migration and repair.",
+  }),
+  peptide({
+    name: "Wolverine Stack",
+    slug: "wolverine-stack-5mg",
+    spec: "5mg + 5mg",
+    unitPrice: 89,
+    category: "Blends",
+    description: "BPC-157 + TB-500 blend, combined for combined tissue-repair research protocols.",
+  }),
+  peptide({
+    name: "CJC-1295 (DAC)",
+    slug: "cjc-1295-dac-2mg",
+    spec: "2mg",
+    unitPrice: 55,
+    description: "Growth-hormone-releasing hormone analog studied for its extended half-life.",
+  }),
+  peptide({
+    name: "Ipamorelin",
+    slug: "ipamorelin-5mg",
+    spec: "5mg",
+    unitPrice: 39,
+    description: "Selective growth hormone secretagogue studied in GH-axis research.",
+  }),
+  peptide({
+    name: "Tesamorelin",
+    slug: "tesamorelin-5mg",
+    spec: "5mg",
+    unitPrice: 65,
+    description: "Growth-hormone-releasing factor analog studied in metabolic and visceral-fat research.",
+  }),
+  peptide({
+    name: "Semaglutide",
+    slug: "semaglutide-5mg",
+    spec: "5mg",
+    unitPrice: 95,
+    category: "GLP-1",
+    description: "GLP-1 receptor agonist studied in metabolic and appetite-regulation research.",
+  }),
+  peptide({
+    name: "Tirzepatide",
+    slug: "tirzepatide-30mg",
+    spec: "30mg",
+    unitPrice: 129,
+    category: "GLP-1",
+    description: "Dual GIP/GLP-1 receptor agonist studied in metabolic research.",
+  }),
+  peptide({
+    name: "Retatrutide",
+    slug: "retatrutide-10mg",
+    spec: "10mg",
+    unitPrice: 149,
+    category: "GLP-1",
+    description: "Triple GIP/GLP-1/glucagon receptor agonist studied in metabolic research.",
+  }),
+  peptide({
+    name: "NAD+",
+    slug: "nad-500mg",
+    spec: "500mg",
+    unitPrice: 69,
+    category: "Longevity",
+    description: "Nicotinamide adenine dinucleotide, studied for its role in cellular energy metabolism.",
+  }),
+  peptide({
+    name: "GHK-Cu",
+    slug: "ghk-cu-50mg",
+    spec: "50mg",
+    unitPrice: 59,
+    category: "Longevity",
+    description: "Copper peptide studied for tissue remodeling and skin research.",
+  }),
+  peptide({
+    name: "Gonadorelin",
+    slug: "gonadorelin-5mg",
+    spec: "5mg",
+    unitPrice: 49,
+    description: "Gonadotropin-releasing hormone analog studied in the HPG axis.",
+  }),
+  peptide({
+    name: "Selank",
+    slug: "selank-5mg",
+    spec: "5mg",
+    unitPrice: 45,
+    category: "Nootropic",
+    description: "Synthetic peptide analog of tuftsin, studied for anxiolytic and cognitive research.",
+  }),
+  peptide({
+    name: "Semax",
+    slug: "semax-30mg",
+    spec: "30mg",
+    unitPrice: 55,
+    category: "Nootropic",
+    description: "ACTH(4-10) analog studied for cognitive and neuroprotective research.",
+  }),
+  peptide({
+    name: "Bacteriostatic Water",
+    slug: "bac-water-30ml",
+    spec: "30mL",
+    unitPrice: 15,
+    category: "Supplies",
+    description: "Bacteriostatic water for reconstituting lyophilized research peptides.",
+  }),
+];

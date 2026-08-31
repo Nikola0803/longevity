@@ -1,0 +1,107 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------------------------------------------------------------------- */
+/* Theme tokens · ported from Vertalis's [data-theme="light"] palette.
+   This app has only one palette — no dark mode, no toggle, no [data-theme]
+   attribute. Values are space-separated RGB triplets so Tailwind can compose
+   them as "rgb(var(--x) / <alpha-value>)" and opacity modifiers keep
+   working. ------------------------------------------------------------- */
+:root {
+  --bg-100: 243 246 247;
+  --bg-200: 237 241 243;
+  --bg-300: 226 232 235;
+  --bg-800: 255 255 255;
+  --bg-900: 245 248 249;
+  --fg-100: 22 35 43;
+  --fg-200: 43 59 68;
+  --fg-300: 63 81 91;
+  --fg-400: 90 108 118;
+  --fg-500: 117 135 144;
+  --fg-600: 147 160 168;
+  --primary-500: 62 143 199;
+  --secondary-500: 110 135 152;
+  --accent-200: 63 81 91;
+  --accent-300: 43 59 68;
+  --signal: 214 69 61;
+  --hero-emphasis: 27 100 120;
+  --platinum-1: 43 59 68;
+  --platinum-2: 22 35 43;
+  --platinum-3: 63 81 91;
+}
+
+/* Photo darkening overlays wash out to white on this light palette, so they
+   stay off — kept as a class in case a component still applies it. */
+.photo-fade {
+  opacity: 0;
+}
+
+.cat-card-scrim {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.88) 0%, rgba(0, 0, 0, 0.45) 45%, rgba(0, 0, 0, 0.05) 75%, transparent 100%);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: rgb(var(--bg-800));
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--bg-200));
+  border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--bg-300));
+}
+
+::selection {
+  color: rgb(var(--fg-100));
+  background: rgb(var(--primary-500) / 0.35);
+}
+
+@layer utilities {
+  .ease-precision {
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .glass {
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    background: linear-gradient(135deg, rgb(var(--bg-100) / 0.7), rgb(var(--bg-800) / 0.6));
+    border: 1px solid rgb(var(--accent-300) / 0.08);
+  }
+
+  .glass-hover {
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .glass-hover:hover {
+    background: linear-gradient(135deg, rgb(var(--bg-100) / 0.85), rgb(var(--bg-800) / 0.7));
+    border-color: rgb(var(--primary-500) / 0.35);
+  }
+
+  .glow-cyan {
+    box-shadow:
+      0 0 0 1px rgb(var(--primary-500) / 0.18),
+      0 0 26px -8px rgb(var(--primary-500) / 0.22);
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+.hp-field {
+  position: absolute;
+  left: -9999px;
+  top: -9999px;
+  height: 0;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
