@@ -274,7 +274,7 @@ export default function AccountPage() {
                         <div className="sm:w-32 shrink-0">
                           <p className="font-mono text-[12px] text-primary-500">#{order.number}</p>
                           <p className="text-[11px] text-foreground-500 mt-0.5">
-                            {new Date(order.date_created).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                            {new Date(order.date_created).toLocaleDateString("en-AU", { month: "short", day: "numeric", year: "numeric" })}
                           </p>
                         </div>
                         <div className="flex-1 min-w-0">

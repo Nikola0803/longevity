@@ -6,7 +6,7 @@ import PromoBanner from "@/components/PromoBanner";
 export const metadata: Metadata = {
   title: "Contact Us",
   description:
-    "US-based support available 7 days a week for product questions, bulk orders, and documentation. We respond within 24 hours.",
+    "Australia-based support available 7 days a week for product questions, bulk orders, and documentation. We respond within 24 hours.",
   alternates: { canonical: "/contact" },
 };
 
@@ -27,7 +27,7 @@ export default function ContactPage() {
                 Talk to the team.
               </h1>
               <p className="text-[15px] text-foreground-400 max-w-lg">
-                US-based support available 7 days a week. Whether you have a product question, bulk order inquiry, or need documentation. We respond within 24 hours.
+                Australia-based support available 7 days a week. Whether you have a product question, bulk order inquiry, or need documentation. We respond within 24 hours.
               </p>
             </div>
             <div className="hidden lg:block lg:col-span-5 h-[240px] relative rounded-xl overflow-hidden border border-background-200/60">
@@ -39,7 +39,7 @@ export default function ContactPage() {
               <div className="photo-fade absolute inset-0 bg-gradient-to-t from-background-900/70 via-transparent to-transparent"></div>
               <div className="absolute bottom-3 left-3 right-3 flex items-center gap-2 px-3.5 py-2.5 rounded-lg bg-background-900/85 backdrop-blur border border-background-200/50">
                 <span className="w-1.5 h-1.5 rounded-full bg-primary-500 shrink-0"></span>
-                <span className="font-mono text-[10px] tracking-[0.08em] text-foreground-200 uppercase">7 Days a Week · US-Based</span>
+                <span className="font-mono text-[10px] tracking-[0.08em] text-foreground-200 uppercase">7 Days a Week · AU-Based</span>
               </div>
             </div>
           </div>
@@ -82,8 +82,8 @@ export default function ContactPage() {
               <h2 className="font-display text-[24px] text-foreground-100 mb-6">Other ways to reach us</h2>
               {[
                 { icon: "ri-mail-line", title: "Email", val: "orders@longevitypeptides.com", sub: "General inquiries & orders" },
-                { icon: "ri-customer-service-2-line", title: "Support Hours", val: "7 days · 9AM–8PM EST", sub: "Response within 24 hours" },
-                { icon: "ri-building-2-line", title: "Location", val: "United States", sub: "US-based operations & dispatch" },
+                { icon: "ri-customer-service-2-line", title: "Support Hours", val: "7 days · 9AM–8PM AEST", sub: "Response within 24 hours" },
+                { icon: "ri-building-2-line", title: "Location", val: "Australia", sub: "Australia-based operations & dispatch" },
               ].map((item) => (
                 <div key={item.title} className="flex items-start gap-4 p-5 rounded-xl bg-background-900/70 border border-background-200/60">
                   <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-primary-500/10 text-primary-500 shrink-0">

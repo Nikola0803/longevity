@@ -51,7 +51,7 @@ export default async function ProductPage({ params }: { params: { slug: string }
         offers: {
           "@type": "Offer",
           url: `${SITE_URL}/product/${product.slug}`,
-          priceCurrency: "USD",
+          priceCurrency: "AUD",
           price: product.price,
           availability: product.disabled ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
         },

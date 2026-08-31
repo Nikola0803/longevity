@@ -1,13 +1,13 @@
 export function money(cents: number): string {
-  return (cents / 100).toLocaleString("en-US", {
+  return (cents / 100).toLocaleString("en-AU", {
     style: "currency",
-    currency: "USD",
+    currency: "AUD",
   });
 }
 
 export function shortDate(date: Date | string): string {
   const d = typeof date === "string" ? new Date(date) : date;
-  return d.toLocaleString("en-US", {
+  return d.toLocaleString("en-AU", {
     month: "short",
     day: "numeric",
     year: "numeric",
@@ -16,7 +16,7 @@ export function shortDate(date: Date | string): string {
 
 export function dateTime(date: Date | string): string {
   const d = typeof date === "string" ? new Date(date) : date;
-  return d.toLocaleString("en-US", {
+  return d.toLocaleString("en-AU", {
     month: "short",
     day: "numeric",
     year: "numeric",

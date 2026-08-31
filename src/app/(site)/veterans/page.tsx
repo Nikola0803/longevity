@@ -70,7 +70,7 @@ export default function VeteransPage() {
             <div className="hidden lg:block lg:col-span-5 h-[280px] relative rounded-xl overflow-hidden border border-background-200/60">
               <img
                 src="https://images.pexels.com/photos/8865116/pexels-photo-8865116.jpeg?auto=compress&cs=tinysrgb&w=1200"
-                alt="American flag memorial"
+                alt="Military service memorial"
                 className="w-full h-full object-cover"
               />
               <div className="photo-fade absolute inset-0 bg-gradient-to-t from-background-900/70 via-transparent to-transparent"></div>

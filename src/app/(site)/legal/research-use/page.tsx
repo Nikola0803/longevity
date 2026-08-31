@@ -71,7 +71,7 @@ export default function ResearchUsePage() {
             {
               icon: "ri-hospital-line",
               title: "Are NOT therapeutic",
-              desc: "Not approved as drugs, treatments, or medical interventions by the FDA or any regulatory body.",
+              desc: "Not approved as drugs, treatments, or medical interventions by the Therapeutic Goods Administration (TGA) or any regulatory body.",
             },
             {
               icon: "ri-microscope-line",
@@ -93,7 +93,7 @@ export default function ResearchUsePage() {
             "You are a qualified scientist, researcher, or authorised representative of a research institution",
             "You will use the products only for legitimate research or educational purposes in a controlled laboratory setting",
             "You have the proper facilities, equipment, and expertise to safely handle research-grade chemicals",
-            "You will comply with all applicable federal, state, and local laws regarding the purchase, storage, use, and disposal of research chemicals",
+            "You will comply with all applicable Commonwealth, state, and territory laws regarding the purchase, storage, use, and disposal of research chemicals, including the Poisons Standard (SUSMP) and relevant Customs (Prohibited Imports) regulations",
             "You will NOT use the products for human consumption or administration in any form",
             "You will NOT resell or distribute products to any party who intends to use them for non-research purposes",
             `You are at least ${SITE.minimumAge} years of age`,
@@ -105,11 +105,17 @@ export default function ResearchUsePage() {
 
       <LegalSection n={4} title="Regulatory Compliance">
         <p>
-          {SITE.legalName} is a chemical supplier, not a compounding pharmacy or
-          outsourcing facility as defined under Sections 503A or 503B of the Federal Food,
-          Drug, and Cosmetic Act. Our products have not been evaluated by the U.S. Food and
-          Drug Administration (FDA) and are not intended to diagnose, treat, cure, or
-          prevent any disease or condition.
+          {SITE.legalName} is a chemical supplier, not a compounding pharmacy, and does not
+          hold a licence to manufacture or supply therapeutic goods under the Therapeutic
+          Goods Act 1989 (Cth). Our products have not been evaluated by the Therapeutic
+          Goods Administration (TGA) and are not intended to diagnose, treat, cure, or
+          prevent any disease or condition. Peptides supplied for research use are not
+          included in the Australian Register of Therapeutic Goods (ARTG) and must not be
+          imported, possessed, or supplied for human use without complying with the
+          Poisons Standard (SUSMP) and any applicable state or territory poisons
+          legislation. It is the purchaser&apos;s responsibility to determine and comply
+          with any import permit requirements under the Customs (Prohibited Imports)
+          Regulations 1956 before placing an order.
         </p>
       </LegalSection>
 

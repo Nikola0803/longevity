@@ -106,7 +106,7 @@ export default function BestSellerCard({
               <span className="font-display text-[16px] text-foreground-100 group-hover:text-foreground-100 transition-colors duration-500">
                 {formatPrice(selected.price)}
               </span>
-              <span className="font-mono text-[10px] text-foreground-600">USD</span>
+              <span className="font-mono text-[10px] text-foreground-600">AUD</span>
             </div>
           </div>
           <div className="mb-2">

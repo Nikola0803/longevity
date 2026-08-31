@@ -15,23 +15,22 @@ export const SITE = {
   /** Display / marketing name */
   brand: "LONGEVITY PEPTIDES",
   /** Legal entity name used in contracts and policies */
-  legalName: "Longevity Peptides, LLC",
+  legalName: "Longevity Peptides Pty Ltd",
   /** Short tagline shown under the wordmark */
   tagline: "The Precision Standard in Research Peptides",
 
-  /** Minimum age to access the site and purchase (years) */
-  minimumAge: 21,
+  /** Minimum age to access the site and purchase (years) — 18 (legal adult age in Australia/NZ) */
+  minimumAge: 18,
 
   /* --- Contact (blank fields are hidden on legal pages) --- */
   contactEmail: "", // TODO e.g. "compliance@longevitypeptides.com"; leave "" to route users to /contact
-  contactPhone: "", // TODO e.g. "(000) 000-0000"; leave "" to hide
+  contactPhone: "", // TODO e.g. "(0X) XXXX XXXX"; leave "" to hide
   /** Registered business mailing address, one line or blank */
   businessAddress: "", // TODO: leave "" to hide
 
   /* --- Jurisdiction & fulfilment --- */
-  // TODO Confirm with counsel. Used in the Terms "Governing Law" section.
-  governingLaw:
-    "the laws of the jurisdiction in which Longevity Peptides is organised, without regard to conflict-of-law provisions",
+  // TODO Confirm with counsel — which state/territory courts have exclusive jurisdiction, if any.
+  governingLaw: "the laws of Australia, without regard to conflict-of-law provisions",
   /** Where you ship to, plain language for the Shipping policy */
   shipsTo: "Australia and New Zealand",
   /** Typical order handling time */

@@ -17,7 +17,7 @@ const MESSAGES: BannerMessage[] = [
   },
   { type: "text", label: "Want to know about our standards?", href: "/quality" },
   { type: "text", label: "Third-party COA on every batch, no exceptions", href: "/coa" },
-  { type: "text", label: "Fast US shipping on every order" },
+  { type: "text", label: "Fast AU & NZ shipping on every order" },
   {
     type: "cta",
     label: "Active Military, Veterans & First Responders: 23% Off for Life. See how we honor your service.",

@@ -170,7 +170,7 @@ export default function HeroSection() {
           <div className="flex items-center gap-3 mb-7" style={{ animation: "nvFadeUp 0.8s ease forwards 0.25s", opacity: 0 }}>
             <span style={{ width: 28, height: 1, background: TEAL, display: "inline-block" }}/>
             <p style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 10, letterSpacing: "0.3em", textTransform: "uppercase", color: TEAL_D }}>
-              USA Research Grade Peptides
+              Australian Research Grade Peptides
             </p>
           </div>
 
@@ -227,7 +227,7 @@ export default function HeroSection() {
             maxWidth: 420, marginBottom: 4,
             animation: "nvFadeUp 0.9s ease forwards 1.04s", opacity: 0,
           }}>
-            Premium research-grade peptides lyophilized and verified in the USA. Engineered for consistency, stability, and analytical reliability.
+            Premium research-grade peptides lyophilized and verified in Australia. Engineered for consistency, stability, and analytical reliability.
           </p>
           <p style={{
             fontSize: 10, fontStyle: "italic", color: "rgb(var(--fg-100) / 0.2)",

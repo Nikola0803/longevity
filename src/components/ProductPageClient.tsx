@@ -171,7 +171,7 @@ export default function ProductPageClient({ slug }: { slug: string }) {
                       <i className="ri-checkbox-circle-line text-primary-500 mt-0.5 shrink-0"></i>
                       <span>
                         Mixing instructions insert + blunt-tip syringe for mixing
-                        <span className="block text-foreground-500 text-[11px] mt-0.5">Included with US orders only</span>
+                        <span className="block text-foreground-500 text-[11px] mt-0.5">Included with Australian orders only</span>
                       </span>
                     </li>
                   </ul>
