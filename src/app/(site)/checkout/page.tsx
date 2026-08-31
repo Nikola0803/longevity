@@ -227,7 +227,7 @@ export default function CheckoutPage() {
       <PromoBanner />
       <Header />
       <main>
-        <section className="pt-[112px] bg-background-900 border-b border-background-200/60">
+        <section className="pt-[96px] bg-background-900 border-b border-background-200/60">
           <div className="w-full max-w-[1440px] mx-auto px-6 md:px-10 py-12">
             <div className="flex items-center gap-3 mb-3">
               <span className="w-8 h-px bg-primary-500/60"></span>

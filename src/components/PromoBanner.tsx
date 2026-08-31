@@ -33,7 +33,7 @@ const FADE_MS = 250;
  * PromoBanner: persistent strip above the main navbar.
  * Rotates through MESSAGES, starting at a random index and advancing on an
  * interval. Fixed height (h-10 / 40px) so Header.tsx can sit at a known
- * top-10 offset and every page's pt-[112px] (72px header + 40px banner)
+ * top-10 offset and every page's pt-[96px] (72px header + 40px banner)
  * lines up.
  */
 export default function PromoBanner() {

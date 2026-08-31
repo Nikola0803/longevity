@@ -31,7 +31,7 @@ export default function QualityPage() {
       <PromoBanner /><Header />
       <main>
         {/* Hero */}
-        <section className="relative pt-[112px] bg-background-900 border-b border-background-200/60">
+        <section className="relative pt-[96px] bg-background-900 border-b border-background-200/60">
           <div className="absolute inset-0 grid-overlay opacity-20 pointer-events-none"></div>
           <div className="absolute top-20 right-0 w-80 h-80 rounded-full bg-primary-500/5 blur-[120px] pointer-events-none"></div>
           <div className="relative w-full max-w-[1440px] mx-auto px-6 md:px-10 py-20 md:py-28 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">

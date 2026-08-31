@@ -148,7 +148,7 @@ export default async function CategoryPage({
       <PromoBanner /><Header />
       <main>
         {/* Hero */}
-        <section className="relative pt-[112px] bg-background-900 border-b border-background-200/60">
+        <section className="relative pt-[96px] bg-background-900 border-b border-background-200/60">
           <div className="absolute inset-0 grid-overlay opacity-20 pointer-events-none"></div>
           <div className="relative w-full max-w-[1440px] mx-auto px-6 md:px-10 py-14 md:py-16">
             <div className="flex items-center justify-between gap-4 mb-6">

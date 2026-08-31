@@ -8,9 +8,9 @@ const nextConfig = {
   },
   images: {
     remotePatterns: [
-      // Product/CMS images uploaded via /api/admin/upload land here on
-      // Vercel (see route.ts) — next/image needs the host allow-listed.
-      { protocol: "https", hostname: "*.public.blob.vercel-storage.com" },
+      // Logo + fallback-catalog product photos, hosted on the live
+      // WordPress site's asset CDN.
+      { protocol: "https", hostname: "longevitytech-lab.store" },
     ],
   },
 };

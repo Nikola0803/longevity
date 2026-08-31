@@ -26,7 +26,7 @@ export default async function OrderSuccessPage({
     <div className="min-h-screen bg-background-800 text-foreground-100">
       <PromoBanner />
       <Header />
-      <main className="pt-[112px]">
+      <main className="pt-[96px]">
         <section className="w-full max-w-[640px] mx-auto px-6 py-20 flex flex-col items-center text-center">
           <div className="w-20 h-20 flex items-center justify-center rounded-full bg-secondary-500/10 border border-secondary-500/30 mb-6">
             <i className="ri-check-line text-[32px] text-secondary-500"></i>

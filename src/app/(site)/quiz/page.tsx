@@ -157,7 +157,7 @@ export default function QuizPage() {
       <Header />
       <main>
         {/* Hero */}
-        <section className="relative pt-[112px] bg-background-900 border-b border-background-200/60 overflow-hidden">
+        <section className="relative pt-[96px] bg-background-900 border-b border-background-200/60 overflow-hidden">
           <div className="absolute inset-0 grid-overlay opacity-20 pointer-events-none"></div>
           <div className="absolute top-10 right-0 w-96 h-96 rounded-full bg-primary-500/5 blur-[140px] pointer-events-none"></div>
           <div className="relative w-full max-w-[1440px] mx-auto px-6 md:px-10 py-16 md:py-20">

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { useCart } from "@/lib/cart-context";
 import { useProducts } from "@/lib/products-context";
@@ -113,20 +114,18 @@ export default function Header() {
           : "bg-transparent border-b border-transparent"
       }`}
     >
-      <div className="w-full px-6 md:px-10 h-[72px] flex items-center justify-between">
-        <Link className="group flex items-center gap-3 cursor-pointer" href="/">
-          <span className="relative w-9 h-9 flex items-center justify-center shrink-0">
-            <span className="absolute inset-0 rounded-lg border border-primary-500/50 rotate-45 group-hover:border-primary-500 group-hover:shadow-[0_0_18px_-2px_rgb(var(--primary-500) / 0.7)] transition-all duration-500 ease-precision"></span>
-            <span className="absolute inset-[7px] rounded-md bg-primary-500/10 rotate-45 group-hover:bg-primary-500/20 transition-colors duration-500 ease-precision"></span>
-            <span className="relative w-2 h-2 rounded-full bg-primary-500 shadow-[0_0_12px_3px_rgb(var(--primary-500) / 0.65)]"></span>
-          </span>
-          <span className="flex flex-col leading-none">
-            <span className="font-display text-[20px] md:text-[22px] tracking-[0.22em] text-foreground-100 group-hover:text-primary-500 transition-colors duration-300">
-              LONGEVITY PEPTIDES
-            </span>
-            <span className="font-mono text-[8px] md:text-[9px] tracking-[0.42em] text-foreground-500 uppercase mt-1">
-              Laboratories
-            </span>
+      <div className="w-full max-w-[1440px] mx-auto px-6 md:px-10 h-14 flex items-center justify-between">
+        <Link className="group flex items-center gap-2.5 cursor-pointer" href="/">
+          <Image
+            src="https://longevitytech-lab.store/__l5e/assets-v1/ec7b1b43-b30c-4176-b423-54555bf0a418/longevitylab-logo.png"
+            alt="Longevity Peptides"
+            width={32}
+            height={32}
+            className="h-8 w-auto shrink-0"
+            priority
+          />
+          <span className="font-display text-[16px] md:text-[18px] tracking-[0.18em] text-foreground-100 group-hover:text-primary-500 transition-colors duration-300">
+            LONGEVITY PEPTIDES
           </span>
         </Link>
         <nav className="hidden lg:flex items-center gap-10">

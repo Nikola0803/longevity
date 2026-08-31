@@ -24,7 +24,7 @@ export default function LegalShell({
   return (
     <div className="min-h-screen bg-background-800 text-foreground-100">
       <PromoBanner /><Header />
-      <main className="pt-[112px]">
+      <main className="pt-[96px]">
         <LegalHero line1={line1} line2={line2} breadcrumb={breadcrumb} />
         <div className="w-full max-w-[860px] mx-auto px-6 md:px-10 py-16">
           <div className="space-y-10">{children}</div>

@@ -67,7 +67,7 @@ export default function ProductPageClient({ slug }: { slug: string }) {
       <PromoBanner /><Header />
       <main>
         {/* Breadcrumb */}
-        <section className="pt-[112px] bg-background-900 border-b border-background-200/60">
+        <section className="pt-[96px] bg-background-900 border-b border-background-200/60">
           <div className="w-full max-w-[1440px] mx-auto px-6 md:px-10 py-5">
             <nav className="flex items-center gap-2 text-[12px] text-foreground-500 font-mono">
               <Link href="/" className="hover:text-primary-500 transition-colors">Home</Link>

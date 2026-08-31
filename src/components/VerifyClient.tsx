@@ -21,7 +21,7 @@ export default function VerifyClient({ slug }: { slug: string }) {
     <div className="min-h-screen bg-background-800 text-foreground-100">
       <PromoBanner /><Header />
       <main>
-        <section className="relative pt-[112px] pb-16 md:pb-24 bg-background-900 border-b border-background-200/60 overflow-hidden">
+        <section className="relative pt-[96px] pb-16 md:pb-24 bg-background-900 border-b border-background-200/60 overflow-hidden">
           <div className="absolute inset-0 grid-overlay opacity-20 pointer-events-none"></div>
           <div className="absolute top-24 right-10 w-80 h-80 rounded-full bg-primary-500/5 blur-[120px] pointer-events-none"></div>
 
