@@ -12,7 +12,7 @@ function slugify(input: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
-// Adds a new first-party Brand (a second Vertalis-style storefront running
+// Adds a new first-party Brand (a second Longevity Peptides-style storefront running
 // this same codebase) rather than an external WooCommerce store. Deploy
 // another copy of this app with STORE_BRAND_SLUG set to the new brand's
 // slug and it becomes that site's backend, sharing this same CRM/CMS and

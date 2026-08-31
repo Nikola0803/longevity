@@ -35,7 +35,7 @@ export default async function ProductsPage() {
     <div>
       <PageHeader
         title="Products"
-        subtitle="The full Vertalis catalog — content, pricing, stock, and SEO all live here"
+        subtitle="The full Longevity Peptides catalog — content, pricing, stock, and SEO all live here"
         actions={
           <Link
             href="/admin/products/new"

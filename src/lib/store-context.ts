@@ -8,17 +8,17 @@ import { resolveHost } from "@/lib/brand-resolver";
  * Multi-tenant storefront resolution.
  *
  * Every public storefront read/write funnels through here, so making THIS
- * function host-aware is what turns the single Vertalis storefront into a
+ * function host-aware is what turns the single Longevity Peptides storefront into a
  * network of branded stores without touching the pages themselves.
  *
  * Resolution order for the incoming request's Host header:
- *   1. Brand.customDomain exact match (covers the legacy vertalispeptides.com)
+ *   1. Brand.customDomain exact match (covers the legacy longevitypeptides.com)
  *   2. Brand.subdomain match  (<sub>.PLATFORM_ROOT_DOMAIN, or <sub>.localhost in dev)
  *   3. Fallback to the env default brand (STORE_ORG_SLUG / STORE_BRAND_SLUG)
  *
  * The fallback is what keeps everything backward compatible: on localhost, on
  * the apex, during static generation, or for any host we don't recognise, you
- * get exactly the Vertalis behaviour you have today.
+ * get exactly the Longevity Peptides behaviour you have today.
  *
  * `cache()` memoises per-request (React request scope), replacing the old
  * cross-request module singleton, which would have leaked one brand to every

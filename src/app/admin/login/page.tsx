@@ -83,7 +83,7 @@ export default function LoginPage() {
           </button>
 
           <p className="text-[11px] text-cc-foreground-500 text-center">
-            First login: <span className="font-mono">operator@vertalispeptides.com</span> /{" "}
+            First login: <span className="font-mono">operator@longevitypeptides.com</span> /{" "}
             <span className="font-mono">password123</span> (change this after signing in)
           </p>
         </form>

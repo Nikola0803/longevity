@@ -12,7 +12,7 @@ import { getCurrentBrand } from "@/lib/store-context";
  * no edits to any component.
  *
  * Token shape stored in Brand.themeTokens (all keys optional, anything absent
- * falls back to the Vertalis default from globals.css):
+ * falls back to the Longevity Peptides default from globals.css):
  *
  *   {
  *     "colors": {
@@ -52,7 +52,7 @@ function sanitizeTriplet(raw: unknown): string | null {
 }
 
 export type BrandTheme = {
-  /** A `:root { --x: ...; }` string, or "" when the brand uses stock Vertalis colours. */
+  /** A `:root { --x: ...; }` string, or "" when the brand uses stock Longevity Peptides colours. */
   css: string;
   /** True when this brand overrides at least one variable. */
   hasOverrides: boolean;

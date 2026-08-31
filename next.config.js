@@ -3,7 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   experimental: {
     serverActions: {
-      allowedOrigins: ["localhost:3000", "vertalispeptides.com", "www.vertalispeptides.com"],
+      allowedOrigins: ["localhost:3000", "longevitypeptides.com", "www.longevitypeptides.com"],
     },
   },
   images: {

@@ -13,7 +13,7 @@ export default async function WebhooksPage() {
 
   return (
     <div>
-      <PageHeader title="Webhooks" subtitle="Vertalis store connection and order sync" />
+      <PageHeader title="Webhooks" subtitle="Longevity Peptides store connection and order sync" />
 
       <Card className="p-4 mb-6">
         <h2 className="text-sm font-semibold text-cc-foreground-950 mb-1">1. Connect an external WooCommerce store</h2>

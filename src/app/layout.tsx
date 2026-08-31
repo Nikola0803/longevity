@@ -29,9 +29,9 @@ const jetbrainsMono = JetBrains_Mono({
 // route group below sets its own richer SEO/OG tags; the /admin CRM
 // dashboard is behind auth and doesn't need any).
 export const metadata: Metadata = {
-  title: "VERTALIS · Research Peptides",
+  title: "LONGEVITY PEPTIDES · Research Peptides",
   description:
-    "Vertalis Peptides — research-grade peptides with public, batch-searchable Certificates of Analysis, and the Command Center CRM/CMS that runs the whole operation.",
+    "Longevity Peptides — research-grade peptides with public, batch-searchable Certificates of Analysis, and the Command Center CRM/CMS that runs the whole operation.",
 };
 
 // One <html>/<body> for the whole merged app. The buyer-facing storefront

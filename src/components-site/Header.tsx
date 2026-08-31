@@ -121,7 +121,7 @@ export default function Header() {
           </span>
           <span className="flex flex-col leading-none">
             <span className="font-display text-[20px] md:text-[22px] tracking-[0.22em] text-foreground-100 group-hover:text-primary-500 transition-colors duration-300">
-              VERTALIS
+              LONGEVITY PEPTIDES
             </span>
             <span className="font-mono text-[8px] md:text-[9px] tracking-[0.42em] text-foreground-500 uppercase mt-1">
               Laboratories

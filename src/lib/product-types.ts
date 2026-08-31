@@ -1,6 +1,6 @@
 /**
  * Shared storefront product shape. Identical to the shape the original
- * Vertalis `data/products.ts` static file exported, so every component
+ * Longevity Peptides `data/products.ts` static file exported, so every component
  * ported from that app keeps working unchanged — only where the data
  * comes from has moved (Postgres via the CRM/CMS, not a hardcoded array).
  */

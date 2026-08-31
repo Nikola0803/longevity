@@ -4,7 +4,7 @@
  * VertalisGate: verified-research-access wall.
  *
  * Combines three things in one gate, matching the Valkyrie pattern but in
- * Vertalis's dark lab aesthetic:
+ * Longevity Peptides's dark lab aesthetic:
  *   1. Age verification (21+) + Research-Use-Only consent: ALWAYS required.
  *   2. Optional account Sign In / Create Account, backed by the WordPress/
  *      WooCommerce endpoints proxied through /api/auth/* (keys stay server-side).

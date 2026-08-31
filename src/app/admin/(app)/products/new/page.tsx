@@ -8,7 +8,7 @@ export default function NewProductPage() {
       <Link href="/admin/products" className="inline-flex items-center gap-1.5 text-xs text-cc-foreground-500 hover:text-cc-foreground-800 mb-3">
         <i className="ri-arrow-left-line" /> Back to products
       </Link>
-      <PageHeader title="New product" subtitle="Add a product to the Vertalis catalog" />
+      <PageHeader title="New product" subtitle="Add a product to the Longevity Peptides catalog" />
       <ProductForm
         initial={{
           name: "",

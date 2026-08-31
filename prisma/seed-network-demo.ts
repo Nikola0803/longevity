@@ -1,7 +1,7 @@
 /**
  * Network demo seed, run AFTER the normal `npm run db:seed`.
  *
- *   npm run db:seed        # creates the Vertalis org + brand + catalog
+ *   npm run db:seed        # creates the Longevity Peptides org + brand + catalog
  *   npm run db:seed:demo   # this file: adds a second branded store on the same catalog
  *
  * It proves Phase 1 end to end with zero code changes between the two stores:
@@ -12,7 +12,7 @@
  *   - Adds a second Brand ("Aera Peptides") under the SAME organization, so it
  *     shares the identical master catalog, but with:
  *       * its own subdomain (aera.<root>  /  aera.localhost:3000 in dev)
- *       * its own colour palette (green, vs Vertalis blue)
+ *       * its own colour palette (green, vs Longevity Peptides blue)
  *       * its own retail prices via BrandProduct (here: +20% over the master
  *         price, always above the wholesale cogsCents)
  *
@@ -58,7 +58,7 @@ async function main() {
       where: { id: flagship.id },
       data: {
         subdomain: flagship.subdomain ?? "vertalis",
-        customDomain: flagship.customDomain ?? "vertalispeptides.com",
+        customDomain: flagship.customDomain ?? "longevitypeptides.com",
       },
     });
   }

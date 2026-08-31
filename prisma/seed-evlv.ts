@@ -56,7 +56,7 @@ async function main() {
   });
 
   // First-party brand — evlv-site is a direct-checkout storefront (no
-  // WooCommerce), matching how prisma/seed.ts sets up Vertalis.
+  // WooCommerce), matching how prisma/seed.ts sets up Longevity Peptides.
   const brand = await prisma.brand.upsert({
     where: { organizationId_slug: { organizationId: org.id, slug: "evlv" } },
     update: { status: "CONNECTED" },

@@ -128,7 +128,7 @@ export default function HeroSection() {
         src={
           isLight
             ? "/videos/hero-intro-white-01.mp4"
-            : "/videos/Vertalis-peptides-video-latest-dark-bg.mp4"
+            : "/videos/Longevity Peptides-peptides-video-latest-dark-bg.mp4"
         }
         autoPlay
         muted
@@ -169,7 +169,7 @@ export default function HeroSection() {
             </p>
           </div>
 
-          {/* Main headline · Vertalis's own copy */}
+          {/* Main headline · Longevity Peptides's own copy */}
           <div style={{ marginBottom: 14 }}>
             <h1 style={{
               fontSize: "clamp(44px, 5.8vw, 82px)", lineHeight: 0.9,

@@ -5,7 +5,6 @@ import { useEffect, useRef, useState } from "react";
 import { useCart } from "@/lib/cart-context";
 import { useProducts } from "@/lib/products-context";
 import { getProduct } from "@/lib/product-types";
-import ThemeToggle from "@/components/ThemeToggle";
 import SearchModal from "@/components/SearchModal";
 
 const NAV_LINKS = [
@@ -123,7 +122,7 @@ export default function Header() {
           </span>
           <span className="flex flex-col leading-none">
             <span className="font-display text-[20px] md:text-[22px] tracking-[0.22em] text-foreground-100 group-hover:text-primary-500 transition-colors duration-300">
-              VERTALIS
+              LONGEVITY PEPTIDES
             </span>
             <span className="font-mono text-[8px] md:text-[9px] tracking-[0.42em] text-foreground-500 uppercase mt-1">
               Laboratories
@@ -294,7 +293,6 @@ export default function Header() {
           )}
         </nav>
         <div className="flex items-center gap-3">
-          <ThemeToggle />
           <button
             onClick={() => setSearchOpen(true)}
             aria-label="Search"
@@ -468,8 +466,7 @@ export default function Header() {
             )}
             <div className="flex items-center justify-between py-3 border-t border-background-200/40 mt-1">
               <span className="text-[14.5px] tracking-wide text-foreground-300">Theme</span>
-              <ThemeToggle />
-            </div>
+                </div>
           </nav>
         </div>
       )}

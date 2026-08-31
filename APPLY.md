@@ -26,7 +26,7 @@ Deeper detail behind QUICKSTART.md, for when you're editing this code later.
   existing caller (20 call sites across blog, sitemap, auth, coupons,
   newsletter, order-engine, tracking) is unchanged.
 - Catalog dual-mode: no `BrandProduct` rows means the exact old
-  global-pricing path. Vertalis only moves to per-brand pricing when you
+  global-pricing path. Longevity Peptides only moves to per-brand pricing when you
   explicitly give it `BrandProduct` rows, on your schedule.
 - Theme CSS only renders when a brand has `themeTokens` set.
 - Every storefront page is already `export const dynamic = "force-dynamic"`,

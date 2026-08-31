@@ -3,42 +3,11 @@
 @tailwind utilities;
 
 /* ---------------------------------------------------------------------- */
-/* Theme tokens · dark is the default/original palette (byte-verified
-   against the last known-good commit), [data-theme="light"] overrides it.
-   Values are space-separated RGB triplets (no "rgb()" wrapper) so
-   tailwind.config.ts can compose them as "rgb(var(--x) / <alpha-value>)"
-   and opacity modifiers keep working. ThemeToggle.tsx flips the
-   [data-theme] attribute on <html> at runtime; the inline script in
-   app/layout.tsx sets it before hydration so there's no flash of the
-   wrong theme on load. --------------------------------------------------- */
+/* Theme tokens — light palette only. No [data-theme] switch, no
+   ThemeToggle, no dark values: this app has one look. Values are
+   space-separated RGB triplets so tailwind.config.ts can compose them as
+   "rgb(var(--x) / <alpha-value>)" and opacity modifiers keep working. --- */
 :root {
-  /* Dark theme, retuned toward a restrained navy/steel-blue palette (moving
-     away from the earlier bright mint-teal "neon lab" look) — desaturated
-     accent, cooler near-black backgrounds. Every component reads off these
-     vars, so this one block is most of the "calmer, cleaner tone" pass. */
-  --bg-100: 22 26 34;
-  --bg-200: 32 38 48;
-  --bg-300: 44 51 64;
-  --bg-800: 11 14 20;
-  --bg-900: 8 10 15;
-  --fg-100: 230 234 240;
-  --fg-200: 208 214 224;
-  --fg-300: 190 197 208;
-  --fg-400: 156 165 179;
-  --fg-500: 128 138 154;
-  --fg-600: 98 108 124;
-  --primary-500: 140 178 224;
-  --secondary-500: 112 172 196;
-  --accent-200: 208 214 224;
-  --accent-300: 190 197 208;
-  --signal: 255 92 92;
-  --hero-emphasis: 196 216 240;
-  --hero-dim: 92 126 168;
-  --platinum-1: 245 246 248;
-  --platinum-2: 201 205 211;
-  --platinum-3: 139 147 161;
-}
-[data-theme="light"] {
   --bg-100: 243 246 247;
   --bg-200: 237 241 243;
   --bg-300: 226 232 235;
@@ -66,29 +35,18 @@
 /* ---------------------------------------------------------------------- */
 
 /* Photo darkening overlays (bg-gradient-to-t from-background-900/...) read
-   off --bg-900, which is near-white on the light theme — so instead of a
-   dark vignette for badge legibility, they showed up as a washed-out white
-   haze over every photo. Killing them entirely in light theme; dark theme
-   keeps the gradient exactly as authored. */
-[data-theme="light"] .photo-fade {
+   off --bg-900, which is near-white on this light palette — so instead of a
+   dark vignette for badge legibility, they'd show up as a washed-out white
+   haze over every photo. Killed entirely. */
+.photo-fade {
   opacity: 0;
 }
 
-/* Theme-swapped images (e.g. the dark-vs-white lab photo on the homepage
-   "Vertalis Standard" section): both variants render server-side and are
-   toggled purely by [data-theme], so there's no client-component hydration
-   flicker — same mechanism the anti-flash inline script in layout.tsx
-   already relies on. */
+/* Only the light variant of any theme-swapped image pair ever renders now. */
 .theme-only-dark {
-  display: block;
+  display: none;
 }
 .theme-only-light {
-  display: none;
-}
-[data-theme="light"] .theme-only-dark {
-  display: none;
-}
-[data-theme="light"] .theme-only-light {
   display: block;
 }
 

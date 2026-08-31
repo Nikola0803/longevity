@@ -256,7 +256,7 @@ export const QUIZ_LABELS = {
   alsoWorthLook: "Also worth a look",
   pageHeader: "Based on what you told us",
   pageSubheader:
-    "A short, research-first starting point, not a recommendation. Everything at Vertalis is for research use only.",
+    "A short, research-first starting point, not a recommendation. Everything at Longevity Peptides is for research use only.",
   footer:
     "These are starting points for your own research, chosen from what you selected. Nothing here is medical or dosing advice.",
 };

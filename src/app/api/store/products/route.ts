@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getAllCatalogProducts } from "@/lib/catalog";
+import { getAllCatalogProducts } from "@/lib/storefront-catalog";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";

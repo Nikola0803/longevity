@@ -5,15 +5,15 @@ import { useState } from "react";
 const FAQS = [
   {
     q: "What are research peptides?",
-    a: "Research peptides are short chains of amino acids used exclusively in laboratory and scientific research settings. They serve as tools for studying biological processes, receptor interactions, and metabolic pathways. All VERTALIS peptides are supplied as lyophilized powder for research use only.",
+    a: "Research peptides are short chains of amino acids used exclusively in laboratory and scientific research settings. They serve as tools for studying biological processes, receptor interactions, and metabolic pathways. All LONGEVITY PEPTIDES peptides are supplied as lyophilized powder for research use only.",
   },
   {
-    q: "Are VERTALIS products for human use?",
-    a: "No. All VERTALIS products are sold strictly for laboratory and research use only. They are not intended for human or veterinary use, and not for use as a drug, food, dietary supplement, or cosmetic. Every order is subject to our Research Use Only (RUO) compliance terms.",
+    q: "Are LONGEVITY PEPTIDES products for human use?",
+    a: "No. All LONGEVITY PEPTIDES products are sold strictly for laboratory and research use only. They are not intended for human or veterinary use, and not for use as a drug, food, dietary supplement, or cosmetic. Every order is subject to our Research Use Only (RUO) compliance terms.",
   },
   {
     q: "How do I verify the purity of my batch?",
-    a: "Every VERTALIS vial includes a batch code printed on the label. Enter this code on our COA Lookup page to retrieve the full Certificate of Analysis, including HPLC chromatograms, mass spectrometry data, and the independent laboratory report. All COAs are publicly archived and permanently searchable.",
+    a: "Every LONGEVITY PEPTIDES vial includes a batch code printed on the label. Enter this code on our COA Lookup page to retrieve the full Certificate of Analysis, including HPLC chromatograms, mass spectrometry data, and the independent laboratory report. All COAs are publicly archived and permanently searchable.",
   },
   {
     q: "What is lyophilized powder and how should I store it?",
@@ -25,7 +25,7 @@ const FAQS = [
   },
   {
     q: "Do you ship internationally?",
-    a: "Yes. VERTALIS ships to research institutions and laboratories worldwide. Shipping rates and transit times vary by destination. All international orders are subject to local import regulations. It is the buyer's responsibility to ensure compliance with their country's customs and import laws.",
+    a: "Yes. LONGEVITY PEPTIDES ships to research institutions and laboratories worldwide. Shipping rates and transit times vary by destination. All international orders are subject to local import regulations. It is the buyer's responsibility to ensure compliance with their country's customs and import laws.",
   },
   {
     q: "What is your return policy?",

@@ -72,7 +72,7 @@ export default function SiteFooter() {
                 <span className="relative w-1.5 h-1.5 rounded-full bg-primary-500 shadow-[0_0_10px_2px_rgb(var(--primary-500) / 0.6)]"></span>
               </span>
               <span className="flex flex-col leading-none">
-                <span className="font-display text-[19px] tracking-[0.22em] text-foreground-100">VERTALIS</span>
+                <span className="font-display text-[19px] tracking-[0.22em] text-foreground-100">LONGEVITY PEPTIDES</span>
                 <span className="font-mono text-[8px] tracking-[0.4em] text-foreground-500 uppercase mt-1">Laboratories</span>
               </span>
             </div>
@@ -116,14 +116,14 @@ export default function SiteFooter() {
               <span className="font-mono text-[11px] tracking-[0.18em] text-accent-300 uppercase">Research Use Only</span>
             </div>
             <p className="text-[12px] text-foreground-500 leading-relaxed flex-1">
-              All products sold on this website are intended for research and identification purposes only. These products are not intended for human dosing, injection, or ingestion. The statements made on this website have not been evaluated by the US Food and Drug Administration. The statements and the products of this company are not intended to diagnose, treat, cure, or prevent any disease. Vertalis is a chemical supplier, not a compounding pharmacy or outsourcing facility as defined under 503A or 503B of the Federal Food, Drug, and Cosmetic Act.
+              All products sold on this website are intended for research and identification purposes only. These products are not intended for human dosing, injection, or ingestion. The statements made on this website have not been evaluated by the US Food and Drug Administration. The statements and the products of this company are not intended to diagnose, treat, cure, or prevent any disease. Longevity Peptides is a chemical supplier, not a compounding pharmacy or outsourcing facility as defined under 503A or 503B of the Federal Food, Drug, and Cosmetic Act.
             </p>
           </div>
         </div>
 
         {/* Bottom bar */}
         <div className="pt-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <p className="text-[12px] text-foreground-600 font-mono">© 2026 VERTALIS PEPTIDES · ALL RIGHTS RESERVED</p>
+          <p className="text-[12px] text-foreground-600 font-mono">© 2026 LONGEVITY PEPTIDES PEPTIDES · ALL RIGHTS RESERVED</p>
           <div className="flex items-center gap-5">
             <span className="text-[11px] font-mono text-foreground-600 tracking-wider">TESTED BY</span>
             <span className="text-[11px] font-mono text-foreground-400">JANOSHIK</span>

@@ -72,7 +72,7 @@ export default function CoaModal({
                   <span className="absolute inset-0 rounded border border-primary-500/50 rotate-45"></span>
                   <span className="relative w-1 h-1 rounded-full bg-primary-500"></span>
                 </span>
-                <span className="font-display text-[14px] tracking-[0.2em] text-foreground-100">VERTALIS</span>
+                <span className="font-display text-[14px] tracking-[0.2em] text-foreground-100">LONGEVITY PEPTIDES</span>
               </div>
               <p className="font-mono text-[10px] tracking-[0.2em] text-foreground-600 uppercase">Research Peptide Laboratories</p>
             </div>

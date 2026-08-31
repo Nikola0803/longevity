@@ -9,23 +9,23 @@ const prisma = new PrismaClient();
 // to show something sane out of the box; edit per-product in /admin/products.
 const ASSUMED_COGS_RATIO = 0.35;
 
-// Staff login created for the Vertalis organization. Change this password
+// Staff login created for the Longevity Peptides organization. Change this password
 // after first login (Settings, once account management is added there).
-const STAFF_EMAIL = "operator@vertalispeptides.com";
+const STAFF_EMAIL = "operator@longevitypeptides.com";
 const STAFF_PASSWORD = "password123";
 
 async function main() {
   const org = await prisma.organization.upsert({
     where: { slug: "vertalis" },
     update: {},
-    create: { name: "Vertalis Peptides", slug: "vertalis", plan: "GROWTH" },
+    create: { name: "Longevity Peptides", slug: "vertalis", plan: "GROWTH" },
   });
 
   const passwordHash = await bcrypt.hash(STAFF_PASSWORD, 10);
   const staffUser = await prisma.user.upsert({
     where: { email: STAFF_EMAIL },
     update: {},
-    create: { email: STAFF_EMAIL, name: "Vertalis Operator", passwordHash },
+    create: { email: STAFF_EMAIL, name: "Longevity Peptides Operator", passwordHash },
   });
   await prisma.membership.upsert({
     where: { userId_organizationId: { userId: staffUser.id, organizationId: org.id } },
@@ -43,8 +43,8 @@ async function main() {
     create: {
       organizationId: org.id,
       slug: "vertalis",
-      name: "Vertalis Peptides",
-      domain: "vertalispeptides.com",
+      name: "Longevity Peptides",
+      domain: "longevitypeptides.com",
       status: "CONNECTED",
       lastSyncedAt: new Date(),
     },
@@ -87,9 +87,9 @@ async function main() {
   }
 
   // Live coupons matching the ones referenced in the checkout page's
-  // placeholder copy ("Try VERTALIS10, LABVIP, or WELCOME5").
+  // placeholder copy ("Try LONGEVITY PEPTIDES10, LABVIP, or WELCOME5").
   const coupons: { code: string; discountType: "PERCENT" | "FIXED"; amount: number }[] = [
-    { code: "VERTALIS10", discountType: "PERCENT", amount: 10 },
+    { code: "LONGEVITY PEPTIDES10", discountType: "PERCENT", amount: 10 },
     { code: "WELCOME5", discountType: "FIXED", amount: 5 },
   ];
   for (const c of coupons) {
@@ -171,7 +171,7 @@ async function main() {
     });
   }
 
-  console.log(`Seeded Vertalis: ${PRODUCTS.length} products, ${posts.length} blog posts, brand "${brand.slug}".`);
+  console.log(`Seeded Longevity Peptides: ${PRODUCTS.length} products, ${posts.length} blog posts, brand "${brand.slug}".`);
   console.log(`Sign in at /admin/login with ${STAFF_EMAIL} / ${STAFF_PASSWORD}`);
 }
 

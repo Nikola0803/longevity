@@ -68,7 +68,7 @@ Open:
   at `/admin/*`, an earlier duplicate copy at the bare `/dashboard` etc,
   which caused inconsistent navigation, has been removed, see APPLY.md.
 - `http://localhost:3000/admin/login`, the CRM/CMS back office
-  (`operator@vertalispeptides.com` / `password123`, from the seed).
+  (`operator@longevitypeptides.com` / `password123`, from the seed).
 - `http://localhost:3000/admin/brands`, every brand's real connection
   status, hosted network store vs WooCommerce plugin, live URL, SKU count,
   last synced. New, previously nothing in the nav showed this.

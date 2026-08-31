@@ -19,7 +19,7 @@ export default async function ContentPage() {
     <div>
       <PageHeader
         title="Content (CMS)"
-        subtitle="Blog posts and static pages for the Vertalis site"
+        subtitle="Blog posts and static pages for the Longevity Peptides site"
         actions={
           <Link
             href="/admin/content/new"

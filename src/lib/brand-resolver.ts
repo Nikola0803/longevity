@@ -50,7 +50,7 @@ export function resolveHost(rawHost: string | null | undefined): HostResolution 
   }
 
   // Anything else is a domain a reseller pointed at us (custom domain), OR the
-  // legacy flagship domain (vertalispeptides.com) which is matched by
+  // legacy flagship domain (longevitypeptides.com) which is matched by
   // customDomain too, falling back to the env default brand if unmatched.
   return { kind: "customDomain", value: host };
 }

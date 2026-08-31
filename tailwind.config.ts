@@ -19,7 +19,7 @@ const config: Config = {
     extend: {
       colors: {
         // CRM/CMS dashboard palette — prefixed "cc-" (Command Center) so
-        // these coexist with the Vertalis storefront's own `background`/
+        // these coexist with the Longevity Peptides storefront's own `background`/
         // `foreground`/`primary`/etc tokens below without either theme
         // clobbering the other now that both live in one Tailwind config.
         "cc-background": scale("cc-background"),
@@ -28,7 +28,7 @@ const config: Config = {
         "cc-secondary": scale("cc-secondary"),
         "cc-accent": scale("cc-accent"),
 
-        // Vertalis storefront palette (see globals.css :root / [data-theme]
+        // Longevity Peptides storefront palette (see globals.css :root / [data-theme]
         // for the runtime-swappable --bg-*/--fg-*/etc custom properties).
         background: {
           100: "rgb(var(--bg-100) / <alpha-value>)",

@@ -265,7 +265,7 @@ export default function ProductPageClient({ slug }: { slug: string }) {
                     <h3 className="font-display text-[17px] text-foreground-100 mb-3">Compound Overview</h3>
                     <p className="text-[14px] text-foreground-400 leading-relaxed">
                       {product.description ??
-                        `${product.name} (${product.spec}) is a research-grade peptide compound supplied for laboratory use. Vertalis maintains every batch under pharmaceutical-grade synthesis controls with independent third-party HPLC and mass-spec verification before release.`}
+                        `${product.name} (${product.spec}) is a research-grade peptide compound supplied for laboratory use. Longevity Peptides maintains every batch under pharmaceutical-grade synthesis controls with independent third-party HPLC and mass-spec verification before release.`}
                       {" "}Each vial is lyophilized and sealed under inert atmosphere for maximum stability. Shelf-stable at ambient temperature in transit, so no cold-chain shipping is required.
                     </p>
                   </div>
@@ -325,7 +325,7 @@ export default function ProductPageClient({ slug }: { slug: string }) {
                 <div className="space-y-6">
                   <h3 className="font-display text-[17px] text-foreground-100 mb-3">Certificate of Analysis</h3>
                   <p className="text-[14px] text-foreground-400 leading-relaxed">
-                    Every VERTALIS batch is independently tested by a certified third-party laboratory before release. The COA includes full HPLC chromatograms, mass spectrometry confirmation, and purity quantification.
+                    Every LONGEVITY PEPTIDES batch is independently tested by a certified third-party laboratory before release. The COA includes full HPLC chromatograms, mass spectrometry confirmation, and purity quantification.
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4">
                     <button

@@ -13,7 +13,7 @@ import { toProductView, type Product } from "@/lib/product-types";
  *
  *  - GLOBAL (the flagship brand today): the brand has no BrandProduct rows, so
  *    we return every catalog product at the master priceCents, byte-for-byte
- *    the old behaviour, so Vertalis is completely unaffected until you opt it
+ *    the old behaviour, so Longevity Peptides is completely unaffected until you opt it
  *    into per-brand pricing by giving it BrandProduct rows.
  */
 

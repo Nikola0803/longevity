@@ -30,7 +30,7 @@ export default async function BlogToolPage() {
         <p className="text-sm text-cc-foreground-600 leading-relaxed">
           There's no separate blog system to keep in sync — posts written here (or drafted by an AI writer once one's
           wired in) land in the same Content section under Products/Content in the sidebar, and publish straight to
-          <span className="font-mono"> vertalispeptides.com/blog</span>. Auto-generating drafts grounded in your product
+          <span className="font-mono"> longevitypeptides.com/blog</span>. Auto-generating drafts grounded in your product
           catalog needs an LLM API key (OpenAI/Anthropic) connected server-side — tell me which provider you want and
           I'll wire a "Generate draft" button right into the editor.
         </p>

@@ -48,7 +48,7 @@ export default function CoaLookup() {
             <span className="w-2 h-2 rounded-full bg-primary-500/60"></span>
             <span className="w-2 h-2 rounded-full bg-secondary-500"></span>
           </div>
-          <span className="font-mono text-[10px] tracking-[0.22em] text-foreground-500 uppercase">Vertalis Verification · Terminal</span>
+          <span className="font-mono text-[10px] tracking-[0.22em] text-foreground-500 uppercase">Longevity Peptides Verification · Terminal</span>
           <span className="font-mono text-[10px] text-foreground-600">v2.4</span>
         </div>
 
