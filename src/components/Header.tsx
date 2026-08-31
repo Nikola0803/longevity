@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { useCart } from "@/lib/cart-context";
 import { useProducts } from "@/lib/products-context";
@@ -115,18 +114,18 @@ export default function Header() {
       }`}
     >
       <div className="w-full max-w-[1440px] mx-auto px-6 md:px-10 h-14 flex items-center justify-between">
-        <Link className="group flex items-center gap-2.5 cursor-pointer" href="/">
-          <Image
+        <Link className="group flex items-center cursor-pointer" href="/">
+          {/* Plain <img>, not next/image — the CDN's bot protection blocks
+              Next's server-side image-optimizer fetch (same class of issue
+              as Cloudflare blocking non-browser requests generally), so the
+              browser has to fetch this directly. The logo file already has
+              the "LongevityLab" wordmark baked in, so no separate text
+              label next to it. */}
+          <img
             src="https://longevitytech-lab.store/__l5e/assets-v1/ec7b1b43-b30c-4176-b423-54555bf0a418/longevitylab-logo.png"
             alt="Longevity Peptides"
-            width={32}
-            height={32}
-            className="h-8 w-auto shrink-0"
-            priority
+            className="h-9 md:h-10 w-auto shrink-0"
           />
-          <span className="font-display text-[16px] md:text-[18px] tracking-[0.18em] text-foreground-100 group-hover:text-primary-500 transition-colors duration-300">
-            LONGEVITY PEPTIDES
-          </span>
         </Link>
         <nav className="hidden lg:flex items-center gap-10">
           {NAV_LINKS.map((link) =>

@@ -65,16 +65,12 @@ export default function SiteFooter() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 pb-14 border-b border-background-200/60">
           {/* Brand + newsletter */}
           <div className="lg:col-span-5">
-            <div className="flex items-center gap-3 mb-5">
-              <span className="relative w-8 h-8 flex items-center justify-center shrink-0">
-                <span className="absolute inset-0 rounded-lg border border-primary-500/50 rotate-45"></span>
-                <span className="absolute inset-[6px] rounded-md bg-primary-500/10 rotate-45"></span>
-                <span className="relative w-1.5 h-1.5 rounded-full bg-primary-500 shadow-[0_0_10px_2px_rgb(var(--primary-500) / 0.6)]"></span>
-              </span>
-              <span className="flex flex-col leading-none">
-                <span className="font-display text-[19px] tracking-[0.22em] text-foreground-100">LONGEVITY PEPTIDES</span>
-                <span className="font-mono text-[8px] tracking-[0.4em] text-foreground-500 uppercase mt-1">Laboratories</span>
-              </span>
+            <div className="flex items-center mb-5">
+              <img
+                src="https://longevitytech-lab.store/__l5e/assets-v1/ec7b1b43-b30c-4176-b423-54555bf0a418/longevitylab-logo.png"
+                alt="Longevity Peptides"
+                className="h-9 w-auto"
+              />
             </div>
             <p className="text-[14px] text-foreground-500 leading-relaxed max-w-md mb-6">
               Research updates delivered quarterly. New batch releases, methodology notes, and citations from the field. No hype.
@@ -123,7 +119,7 @@ export default function SiteFooter() {
 
         {/* Bottom bar */}
         <div className="pt-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <p className="text-[12px] text-foreground-600 font-mono">© 2026 LONGEVITY PEPTIDES PEPTIDES · ALL RIGHTS RESERVED</p>
+          <p className="text-[12px] text-foreground-600 font-mono">© 2026 LONGEVITY PEPTIDES · ALL RIGHTS RESERVED</p>
           <div className="flex items-center gap-5">
             <span className="text-[11px] font-mono text-foreground-600 tracking-wider">TESTED BY</span>
             <span className="text-[11px] font-mono text-foreground-400">JANOSHIK</span>

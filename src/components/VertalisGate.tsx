@@ -298,15 +298,11 @@ export default function VertalisGate({ children }: { children: React.ReactNode }
               <p className="font-mono text-[9px] uppercase tracking-[0.34em] text-foreground-600 mb-3">
                 Verified Research Access
               </p>
-              <div className="flex items-center gap-2.5">
-                <span className="relative w-6 h-6 flex items-center justify-center">
-                  <span className="absolute inset-0 rounded-md border border-primary-500/50 rotate-45" />
-                  <span className="relative w-1.5 h-1.5 rounded-full bg-primary-500 shadow-[0_0_10px_2px_rgb(var(--primary-500) / 0.6)]" />
-                </span>
-                <span className="font-display text-[22px] tracking-[0.28em] text-foreground-100">
-                  {SITE.brand}
-                </span>
-              </div>
+              <img
+                src="https://longevitytech-lab.store/__l5e/assets-v1/ec7b1b43-b30c-4176-b423-54555bf0a418/longevitylab-logo.png"
+                alt={SITE.brand}
+                className="h-8 w-auto"
+              />
               <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-foreground-600 mt-2">
                 Research Peptides
               </p>
