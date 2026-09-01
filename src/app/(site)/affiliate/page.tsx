@@ -1,15 +1,7 @@
-import type { Metadata } from "next";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import PromoBanner from "@/components/PromoBanner";
 import { SITE } from "@/data/site-config";
-
-export const metadata: Metadata = {
-  title: "Lab Affiliate Program",
-  description:
-    "Earn commission on every order you refer, up to 16%, with a 30-day cookie window and monthly payouts. Built for researchers, lab managers, and institutions.",
-  alternates: { canonical: "/affiliate" },
-};
 
 const BENEFITS = [
   { icon: "ri-percent-line", title: "Commission on Every Order", body: "Earn a percentage on every verified order placed through your unique referral link or personal discount code." },
@@ -224,7 +216,7 @@ export default function AffiliatePage() {
                   <p className="text-[14px] text-foreground-400 mb-8 max-w-sm mx-auto">
                     The affiliate portal is being finalized. Reach out and we&apos;ll get your account set up directly.
                   </p>
-                  <Link href="/contact" className="w-full sm:w-auto inline-flex h-11 px-8 rounded-md bg-primary-500 text-background-900 text-[13px] font-semibold hover:bg-primary-400 transition-all cursor-pointer items-center justify-center gap-2">
+                  <Link to="/contact" className="w-full sm:w-auto inline-flex h-11 px-8 rounded-md bg-primary-500 text-background-900 text-[13px] font-semibold hover:bg-primary-400 transition-all cursor-pointer items-center justify-center gap-2">
                     <i className="ri-send-plane-line text-[14px]"></i>Contact Us to Apply
                   </Link>
                 </>

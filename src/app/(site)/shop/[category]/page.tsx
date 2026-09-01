@@ -1,12 +1,8 @@
-import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import Link from "next/link";
+import { Link, useParams } from "react-router-dom";
 import Header from "@/components/Header";
 import PromoBanner from "@/components/PromoBanner";
 import ProductCard from "@/components/ProductCard";
-import { getAllCatalogProducts } from "@/lib/storefront-catalog";
-
-const SITE_URL = "https://longevitypeptides.com";
+import { useProducts } from "@/lib/products-context";
 
 const SLUG_TO_CATEGORY: Record<string, string> = {
   "peptides": "Peptides",
@@ -105,41 +101,20 @@ const CATEGORY_SEO_BLOCK: Record<string, { heading: string; paragraphs: string[]
   },
 };
 
-export const dynamic = "force-dynamic";
-
-export async function generateMetadata({
-  params,
-}: {
-  params: { category: string };
-}): Promise<Metadata> {
-  const { category } = params;
+export default function CategoryPage() {
+  const { category = "" } = useParams<{ category: string }>();
+  const products0 = useProducts();
   const categoryName = SLUG_TO_CATEGORY[category];
-  if (!categoryName) return {};
 
-  const title = `${categoryName} Research Peptides`;
-  const description = CATEGORY_INTRO[categoryName] ?? CATEGORY_DESC[categoryName];
-  const url = `${SITE_URL}/shop/${category}`;
+  if (!categoryName) {
+    return (
+      <div className="min-h-screen bg-background-800 text-foreground-100 flex items-center justify-center">
+        <p className="text-foreground-400">Category not found.</p>
+      </div>
+    );
+  }
 
-  return {
-    title,
-    description,
-    alternates: { canonical: url },
-    openGraph: { type: "website", url, title, description },
-    twitter: { card: "summary", title, description },
-  };
-}
-
-export default async function CategoryPage({
-  params,
-}: {
-  params: { category: string };
-}) {
-  const { category } = params;
-  const categoryName = SLUG_TO_CATEGORY[category];
-  if (!categoryName) notFound();
-
-  const allProducts = await getAllCatalogProducts();
-  const products = allProducts.filter((p) => !p.hidden && p.category === categoryName);
+  const products = products0.filter((p) => !p.hidden && p.category === categoryName);
   const otherCategories = Object.entries(SLUG_TO_CATEGORY).filter(([slug]) => slug !== category);
   const seoBlock = CATEGORY_SEO_BLOCK[categoryName];
 
@@ -153,13 +128,13 @@ export default async function CategoryPage({
           <div className="relative w-full max-w-[1440px] mx-auto px-6 md:px-10 py-14 md:py-16">
             <div className="flex items-center justify-between gap-4 mb-6">
               <nav className="flex items-center gap-2 text-[12px] text-foreground-500 font-mono">
-                <Link href="/" className="hover:text-primary-500 transition-colors">Home</Link>
+                <Link to="/" className="hover:text-primary-500 transition-colors">Home</Link>
                 <span>/</span>
-                <Link href="/shop" className="hover:text-primary-500 transition-colors">Shop</Link>
+                <Link to="/shop" className="hover:text-primary-500 transition-colors">Shop</Link>
                 <span>/</span>
                 <span className="text-primary-500">{categoryName}</span>
               </nav>
-              <Link href="/shop" className="group hidden sm:inline-flex items-center gap-2 text-[12px] font-medium text-foreground-400 hover:text-primary-500 transition-colors cursor-pointer">
+              <Link to="/shop" className="group hidden sm:inline-flex items-center gap-2 text-[12px] font-medium text-foreground-400 hover:text-primary-500 transition-colors cursor-pointer">
                 <i className="ri-arrow-left-line text-[13px] group-hover:-translate-x-1 transition-transform"></i>Back to Shop
               </Link>
             </div>
@@ -183,7 +158,7 @@ export default async function CategoryPage({
               {otherCategories.map(([slug, name]) => (
                 <Link
                   key={slug}
-                  href={`/shop/${slug}`}
+                  to={`/shop/${slug}`}
                   className="px-3 py-1.5 rounded-full border border-background-200/60 bg-background-100/60 text-[12px] text-foreground-400 hover:border-primary-500/50 hover:text-primary-500 transition-all cursor-pointer whitespace-nowrap"
                 >
                   {name}
@@ -210,7 +185,7 @@ export default async function CategoryPage({
             <div className="flex flex-col items-center justify-center py-32 text-center">
               <i className="ri-flask-line text-[48px] text-foreground-600 mb-4"></i>
               <p className="text-foreground-400 text-[15px] mb-2">No products currently in this category.</p>
-              <Link href="/shop" className="mt-4 h-9 px-5 rounded-md bg-primary-500 text-background-900 text-[13px] font-semibold hover:bg-primary-400 transition-all cursor-pointer">
+              <Link to="/shop" className="mt-4 h-9 px-5 rounded-md bg-primary-500 text-background-900 text-[13px] font-semibold hover:bg-primary-400 transition-all cursor-pointer">
                 Browse all compounds
               </Link>
             </div>
@@ -243,10 +218,10 @@ export default async function CategoryPage({
               <p className="text-[14px] text-foreground-500">Browse our full research catalog or contact us for custom bulk orders.</p>
             </div>
             <div className="flex gap-3 shrink-0">
-              <Link href="/shop" className="h-10 px-6 rounded-md bg-primary-500 text-background-900 text-[13px] font-semibold hover:bg-primary-400 transition-all cursor-pointer inline-flex items-center gap-2">
+              <Link to="/shop" className="h-10 px-6 rounded-md bg-primary-500 text-background-900 text-[13px] font-semibold hover:bg-primary-400 transition-all cursor-pointer inline-flex items-center gap-2">
                 <i className="ri-apps-line text-[14px]"></i>Full Catalog
               </Link>
-              <Link href="/contact" className="h-10 px-6 rounded-md border border-background-200 text-[13px] text-foreground-300 hover:border-primary-500 hover:text-primary-500 transition-all cursor-pointer inline-flex items-center gap-2">
+              <Link to="/contact" className="h-10 px-6 rounded-md border border-background-200 text-[13px] text-foreground-300 hover:border-primary-500 hover:text-primary-500 transition-all cursor-pointer inline-flex items-center gap-2">
                 Contact Us
               </Link>
             </div>

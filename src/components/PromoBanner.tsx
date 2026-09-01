@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 type BannerMessage =
@@ -98,7 +98,7 @@ export default function PromoBanner() {
           {current.type === "text" &&
             (current.href ? (
               <Link
-                href={current.href}
+                to={current.href}
                 className="flex items-center gap-1.5 text-[11px] md:text-[12px] text-foreground-400 hover:text-primary-500 tracking-wide transition-colors duration-300 ease-precision"
               >
                 {current.label}
@@ -116,7 +116,7 @@ export default function PromoBanner() {
                 {current.label}
               </span>
               <Link
-                href={current.ctaHref}
+                to={current.ctaHref}
                 className="inline-flex items-center gap-1 rounded-full border border-primary-500/50 px-2.5 py-0.5 font-mono font-semibold tracking-[0.1em] text-[10px] text-primary-500 hover:bg-primary-500 hover:text-background-900 transition-colors duration-300 ease-precision shrink-0"
               >
                 {current.ctaLabel}

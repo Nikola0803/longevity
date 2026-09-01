@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import Image from "next/image";
+import { Link } from "react-router-dom";
+import Image from "@/components/Image";
 import Header from "@/components/Header";
 import PromoBanner from "@/components/PromoBanner";
 import CoaModal from "@/components/CoaModal";
@@ -43,7 +43,7 @@ export default function VerifyClient({ slug }: { slug: string }) {
                 <p className="text-[13px] text-foreground-500 leading-relaxed mb-6">
                   This QR code doesn&#39;t match a product in our current catalog. If you scanned this from a Longevity Peptides vial label, contact us with the batch code printed on it and we&#39;ll verify it directly.
                 </p>
-                <Link href="/contact" className="inline-flex items-center gap-2 h-11 px-6 rounded-md bg-primary-500 text-background-900 text-[13px] font-semibold hover:bg-primary-400 transition-all cursor-pointer">
+                <Link to="/contact" className="inline-flex items-center gap-2 h-11 px-6 rounded-md bg-primary-500 text-background-900 text-[13px] font-semibold hover:bg-primary-400 transition-all cursor-pointer">
                   Contact Support<i className="ri-arrow-right-line text-[14px]"></i>
                 </Link>
               </div>
@@ -99,7 +99,7 @@ export default function VerifyClient({ slug }: { slug: string }) {
                       <i className="ri-shield-check-line text-[15px]"></i>View Full Certificate
                     </button>
                     <Link
-                      href={`/product/${product.slug}`}
+                      to={`/product/${product.slug}`}
                       className="mt-3 w-full h-11 rounded-md border border-background-200 text-[13px] text-foreground-300 hover:border-primary-500 hover:text-primary-500 transition-all flex items-center justify-center gap-2 cursor-pointer"
                     >
                       View Product Page<i className="ri-arrow-right-line text-[13px]"></i>
@@ -112,7 +112,7 @@ export default function VerifyClient({ slug }: { slug: string }) {
                     <p className="text-[12px] text-foreground-500 leading-relaxed mb-6">
                       We don&#39;t have a published COA on file for {product.name} yet. If you have a vial in hand, message us the batch code on the label and we&#39;ll send the certificate directly.
                     </p>
-                    <Link href="/contact" className="inline-flex items-center gap-2 h-11 px-6 rounded-md bg-primary-500 text-background-900 text-[13px] font-semibold hover:bg-primary-400 transition-all cursor-pointer">
+                    <Link to="/contact" className="inline-flex items-center gap-2 h-11 px-6 rounded-md bg-primary-500 text-background-900 text-[13px] font-semibold hover:bg-primary-400 transition-all cursor-pointer">
                       Contact Support<i className="ri-arrow-right-line text-[14px]"></i>
                     </Link>
                   </div>
@@ -121,7 +121,7 @@ export default function VerifyClient({ slug }: { slug: string }) {
             )}
 
             <p className="mt-6 text-center text-[11px] text-foreground-600 leading-relaxed">
-              Scanned from a Longevity Peptides vial label. <Link href="/coa" className="text-primary-500 hover:text-primary-400 transition-colors">Browse the full COA archive →</Link>
+              Scanned from a Longevity Peptides vial label. <Link to="/coa" className="text-primary-500 hover:text-primary-400 transition-colors">Browse the full COA archive →</Link>
             </p>
           </div>
         </section>

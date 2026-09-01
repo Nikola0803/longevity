@@ -1,14 +1,6 @@
-import type { Metadata } from "next";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import PromoBanner from "@/components/PromoBanner";
-
-export const metadata: Metadata = {
-  title: "Quality & Verification",
-  description:
-    "Every Longevity Peptides batch passes a documented six-stage quality pipeline, sourcing, synthesis, independent third-party testing, published COA, and ambient fulfillment, before it reaches your lab.",
-  alternates: { canonical: "/quality" },
-};
 
 const STEPS = [
   { n: "01", icon: "ri-flask-line", title: "Sourcing", body: "All raw materials are procured exclusively from vetted synthesis partners operating under strict NDAs. Every supplier undergoes facility audit and documented chain-of-custody verification before we accept a single gram of material." },
@@ -183,7 +175,7 @@ export default function QualityPage() {
               <h2 className="font-display text-[24px] text-foreground-100 mb-1">Verify any batch in seconds.</h2>
               <p className="text-[14px] text-foreground-500">Enter a batch code from any Longevity Peptides vial to retrieve the full COA.</p>
             </div>
-            <Link href="/coa" className="shrink-0 h-10 px-6 rounded-md bg-primary-500 text-background-900 text-[13px] font-semibold hover:bg-primary-400 transition-all cursor-pointer inline-flex items-center gap-2">
+            <Link to="/coa" className="shrink-0 h-10 px-6 rounded-md bg-primary-500 text-background-900 text-[13px] font-semibold hover:bg-primary-400 transition-all cursor-pointer inline-flex items-center gap-2">
               <i className="ri-shield-check-line text-[14px]"></i>COA Archive
             </Link>
           </div>

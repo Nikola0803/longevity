@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useProducts } from "@/lib/products-context";
 
 export default function SearchModal({ onClose }: { onClose: () => void }) {
   const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
-  const router = useRouter();
+  const navigate = useNavigate();
   const products = useProducts();
   const VISIBLE = useMemo(() => products.filter((p) => !p.hidden), [products]);
 
@@ -32,7 +32,7 @@ export default function SearchModal({ onClose }: { onClose: () => void }) {
   }, [query, VISIBLE]);
 
   const goToShop = (q: string) => {
-    router.push(q.trim() ? `/shop?q=${encodeURIComponent(q.trim())}` : "/shop");
+    navigate(q.trim() ? `/shop?q=${encodeURIComponent(q.trim())}` : "/shop");
     onClose();
   };
 
@@ -83,7 +83,7 @@ export default function SearchModal({ onClose }: { onClose: () => void }) {
               {results.map((p) => (
                 <Link
                   key={p.slug}
-                  href={`/product/${p.slug}`}
+                  to={`/product/${p.slug}`}
                   onClick={onClose}
                   className="flex items-center gap-3 px-5 py-3 hover:bg-background-100/50 transition-colors"
                 >

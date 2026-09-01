@@ -5,7 +5,7 @@ import Header from "@/components/Header";
 import PromoBanner from "@/components/PromoBanner";
 import CheckoutSummary from "@/components/CheckoutSummary";
 import { useCart } from "@/lib/cart-context";
-import { getReferralCode } from "@/lib/affiliate";
+import { wooHeadlessCheckout } from "@/lib/checkout";
 import { DEFAULT_SHIPPING_RATES, shippingOptions, type ShippingRates } from "@/lib/shipping";
 
 const COUNTRIES = [
@@ -34,15 +34,6 @@ export default function CheckoutPage() {
   const [shippingRates, setShippingRates] = useState<ShippingRates>(DEFAULT_SHIPPING_RATES);
   const [shippingMethod, setShippingMethod] = useState<"standard" | "expedited" | "overnight" | "international">("standard");
 
-  useEffect(() => {
-    fetch("/api/store/shipping-rates")
-      .then((r) => r.json())
-      .then((rates) => {
-        if (rates && typeof rates.standardCents === "number") setShippingRates(rates);
-      })
-      .catch(() => {});
-  }, []);
-
   const stateRequired = country === "AU";
   const shippingComplete = Boolean(
     firstName.trim() && lastName.trim() && email.trim() && phone.trim() &&
@@ -66,32 +57,27 @@ export default function CheckoutPage() {
     setPlacing(true);
 
     try {
-      const res = await fetch("/api/store/woo-checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          items: items.map((item) => ({
-            wooProductId: item.wooProductId,
-            wooVariationId: item.wooVariationId,
-            qty: item.qty,
-          })),
-          customerNote: orderNotes.trim() || undefined,
-          billing: {
-            first_name: firstName.trim(),
-            last_name: lastName.trim(),
-            email: email.trim(),
-            phone: phone.trim(),
-            address_1: address1.trim(),
-            city: city.trim(),
-            state: stateCode,
-            postcode: postcode.trim(),
-            country,
-          },
-        }),
-      });
-      const result = await res.json().catch(() => ({}));
-      if (!res.ok || !result.redirectUrl) {
-        throw new Error(result?.error || "Something went wrong placing your order. Please try again.");
+      const result = await wooHeadlessCheckout(
+        items.map((item) => ({
+          wooProductId: item.wooProductId ?? 0,
+          wooVariationId: item.wooVariationId,
+          qty: item.qty,
+        })),
+        {
+          first_name: firstName.trim(),
+          last_name: lastName.trim(),
+          email: email.trim(),
+          phone: phone.trim(),
+          address_1: address1.trim(),
+          city: city.trim(),
+          state: stateCode,
+          postcode: postcode.trim(),
+          country,
+        },
+        orderNotes.trim() || undefined,
+      );
+      if (!result.ok || !result.redirectUrl) {
+        throw new Error(result.error || "Something went wrong placing your order. Please try again.");
       }
 
       clearCart();

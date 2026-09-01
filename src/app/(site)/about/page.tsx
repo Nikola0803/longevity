@@ -1,14 +1,6 @@
-import type { Metadata } from "next";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import PromoBanner from "@/components/PromoBanner";
-
-export const metadata: Metadata = {
-  title: "About Us",
-  description:
-    "Longevity Peptides exists to be the research peptide supplier you don't have to take on faith. Documentation over claims, public COAs, and independent third-party testing on every batch.",
-  alternates: { canonical: "/about" },
-};
 
 const PILLARS = [
   {
@@ -138,7 +130,7 @@ export default function AboutPage() {
                 <p className="text-[15px] text-foreground-400 leading-relaxed max-w-md">
                   Every Longevity Peptides product goes through the same pipeline before it's allowed on the shelf. Independent labs report the results. Not us.
                 </p>
-                <Link href="/quality" className="group inline-flex items-center gap-2 mt-6 text-[13px] font-medium text-primary-500 hover:text-primary-400 transition-colors cursor-pointer">
+                <Link to="/quality" className="group inline-flex items-center gap-2 mt-6 text-[13px] font-medium text-primary-500 hover:text-primary-400 transition-colors cursor-pointer">
                   See the full six-stage pipeline
                   <i className="ri-arrow-right-line text-[14px] group-hover:translate-x-1 transition-transform"></i>
                 </Link>
@@ -165,7 +157,7 @@ export default function AboutPage() {
                     </div>
                   </div>
                 ))}
-                <Link href="/coa" className="flex items-center justify-between rounded-lg border border-primary-500/30 bg-primary-500/5 p-5 hover:bg-primary-500/10 transition-colors cursor-pointer group">
+                <Link to="/coa" className="flex items-center justify-between rounded-lg border border-primary-500/30 bg-primary-500/5 p-5 hover:bg-primary-500/10 transition-colors cursor-pointer group">
                   <span className="text-[13px] font-medium text-primary-500">View our published COAs</span>
                   <i className="ri-arrow-right-line text-[14px] text-primary-500 group-hover:translate-x-1 transition-transform"></i>
                 </Link>
@@ -208,10 +200,10 @@ export default function AboutPage() {
                   Browse by research category if you know the direction, or search by compound name and batch code if you already know exactly what's on your list. No account required to check a COA.
                 </p>
                 <div className="flex flex-wrap gap-3">
-                  <Link href="/shop" className="inline-flex items-center gap-2 h-10 px-5 rounded-md bg-primary-500 text-background-900 text-[12px] font-semibold hover:bg-primary-400 transition-all cursor-pointer">
+                  <Link to="/shop" className="inline-flex items-center gap-2 h-10 px-5 rounded-md bg-primary-500 text-background-900 text-[12px] font-semibold hover:bg-primary-400 transition-all cursor-pointer">
                     Browse the Catalog
                   </Link>
-                  <Link href="/coa" className="inline-flex items-center gap-2 h-10 px-5 rounded-md border border-background-200 text-foreground-200 text-[12px] font-medium hover:border-primary-500/50 hover:text-primary-500 transition-all cursor-pointer">
+                  <Link to="/coa" className="inline-flex items-center gap-2 h-10 px-5 rounded-md border border-background-200 text-foreground-200 text-[12px] font-medium hover:border-primary-500/50 hover:text-primary-500 transition-all cursor-pointer">
                     Look Up a COA
                   </Link>
                 </div>
@@ -244,7 +236,7 @@ export default function AboutPage() {
                 A question about a batch, an order, or a compound spec? You'll reach a person who works here. Not a script. No black-box sourcing, no miracle claims, just documented peptides you can actually find what you need on.
               </p>
             </div>
-            <Link href="/contact" className="shrink-0 h-10 px-6 rounded-md bg-primary-500 text-background-900 text-[13px] font-semibold hover:bg-primary-400 transition-all cursor-pointer inline-flex items-center gap-2">
+            <Link to="/contact" className="shrink-0 h-10 px-6 rounded-md bg-primary-500 text-background-900 text-[13px] font-semibold hover:bg-primary-400 transition-all cursor-pointer inline-flex items-center gap-2">
               <i className="ri-chat-3-line text-[14px]"></i>Contact Us
             </Link>
           </div>

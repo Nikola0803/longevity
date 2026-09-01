@@ -86,10 +86,12 @@ class LPCM_Settings {
 	public static function render() {
 		if ( isset( $_POST['lpcm_save_settings'] ) && check_admin_referer( 'lpcm_save_settings' ) ) {
 			self::save( [ 'free_shipping_threshold' => (float) ( $_POST['free_shipping_threshold'] ?? 0 ) ] );
+			update_option( 'lpcm_storefront_origin', untrailingslashit( esc_url_raw( trim( $_POST['lpcm_storefront_origin'] ?? '' ) ) ) );
 			echo '<div class="notice notice-success is-dismissible"><p>Saved.</p></div>';
 		}
 
 		$settings = self::get();
+		$storefront_origin = get_option( 'lpcm_storefront_origin', '' );
 		?>
 		<div class="wrap">
 			<h1>Longevity Peptides Site Settings</h1>
@@ -102,6 +104,13 @@ class LPCM_Settings {
 							<td>
 								<input type="number" step="0.01" min="0" name="free_shipping_threshold" value="<?php echo esc_attr( $settings['free_shipping_threshold'] ); ?>" style="width:140px;">
 								<p class="description">Orders at or above this subtotal show "You qualify for free shipping" in the cart. Set to 0 to hide the free-shipping progress bar entirely.</p>
+							</td>
+						</tr>
+						<tr>
+							<th style="width:220px;padding-left:0;">Storefront origin (CORS)</th>
+							<td>
+								<input type="url" name="lpcm_storefront_origin" value="<?php echo esc_attr( $storefront_origin ); ?>" style="width:100%;max-width:420px;" placeholder="https://longevitypeptides.com">
+								<p class="description">The exact origin (scheme + domain, no trailing path) the Vite storefront is served from. Required for the browser to be allowed to call the WooCommerce Store API (cart/checkout) and this plugin's REST routes cross-origin with cookies. Same value as the NiftiPay gateway's "Headless Storefront URL" setting.</p>
 							</td>
 						</tr>
 					</table>

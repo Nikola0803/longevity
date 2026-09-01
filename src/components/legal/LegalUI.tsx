@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { SITE } from "@/data/site-config";
 
 /* ------------------------------------------------------------------ *
@@ -45,7 +45,7 @@ export function LegalHero({
       {/* Breadcrumb */}
       <div className="bg-background-800 border-b border-background-200/60">
         <div className="w-full max-w-[860px] mx-auto px-6 md:px-10 py-3 flex items-center gap-2 text-[12px] text-foreground-500">
-          <Link href="/" className="hover:text-primary-500 transition-colors">
+          <Link to="/" className="hover:text-primary-500 transition-colors">
             Home
           </Link>
           <i className="ri-arrow-right-s-line" />
@@ -251,7 +251,7 @@ export function ContactCard({ dept }: { dept: string }) {
       )}
       <p className="text-[12px] text-foreground-500 mt-3 leading-relaxed">
         You can also reach us any time through our{" "}
-        <Link href="/contact" className="text-primary-500 hover:underline">
+        <Link to="/contact" className="text-primary-500 hover:underline">
           contact page
         </Link>
         .
@@ -274,7 +274,7 @@ export function RelatedLinks({
         {links.map((doc) => (
           <Link
             key={doc.label}
-            href={doc.href}
+            to={doc.href}
             className="group flex items-center justify-between px-5 py-4 rounded-md bg-background-100 border border-background-200/70 hover:border-primary-500/40 transition-colors"
           >
             <span className="text-[13px] font-medium text-foreground-200 group-hover:text-primary-500 transition-colors">

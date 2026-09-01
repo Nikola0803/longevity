@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { useCart } from "@/lib/cart-context";
 import { useProducts } from "@/lib/products-context";
@@ -114,7 +114,7 @@ export default function Header() {
       }`}
     >
       <div className="w-full max-w-[1440px] mx-auto px-6 md:px-10 h-14 flex items-center justify-between">
-        <Link className="group flex items-center cursor-pointer" href="/">
+        <Link className="group flex items-center cursor-pointer" to="/">
           {/* Plain <img>, not next/image — the CDN's bot protection blocks
               Next's server-side image-optimizer fetch (same class of issue
               as Cloudflare blocking non-browser requests generally), so the
@@ -137,7 +137,7 @@ export default function Header() {
                 onMouseLeave={scheduleCloseShopMenu}
               >
                 <Link
-                  href={link.href}
+                  to={link.href}
                   className="flex items-center gap-1.5 text-[14.5px] tracking-wide text-foreground-300 hover:text-foreground-100 transition-colors relative group"
                   aria-expanded={shopMenuOpen}
                 >
@@ -163,7 +163,7 @@ export default function Header() {
                       Shop by Research Protocol
                     </span>
                     <Link
-                      href="/shop"
+                      to="/shop"
                       className="inline-flex items-center gap-1.5 text-[12px] font-medium text-foreground-200 hover:text-primary-500 transition-colors"
                     >
                       All Products
@@ -173,7 +173,7 @@ export default function Header() {
                   <div className="grid grid-cols-3 gap-x-4 gap-y-7 p-7">
                     {SHOP_PROTOCOLS.map((proto) => (
                       <div key={proto.slug}>
-                        <Link href={proto.href} className="group/proto flex items-center gap-2 mb-3">
+                        <Link to={proto.href} className="group/proto flex items-center gap-2 mb-3">
                           <span className="w-7 h-7 flex items-center justify-center rounded-md bg-primary-500/10 text-primary-500 shrink-0 group-hover/proto:bg-primary-500 group-hover/proto:text-background-900 transition-all duration-300 ease-precision">
                             <i className={`${proto.icon} text-[13px]`}></i>
                           </span>
@@ -188,7 +188,7 @@ export default function Header() {
                             return (
                               <Link
                                 key={slug}
-                                href={`/product/${slug}`}
+                                to={`/product/${slug}`}
                                 className="group/item flex items-center gap-2.5 py-1.5 text-[12.5px] text-foreground-400 hover:text-primary-500 transition-colors"
                               >
                                 <span className="w-6 h-6 rounded overflow-hidden bg-background-200 shrink-0">
@@ -212,14 +212,14 @@ export default function Header() {
                     </span>
                     <div className="flex items-center gap-4">
                       <Link
-                        href="/quiz"
+                        to="/quiz"
                         className="inline-flex items-center gap-1.5 text-[12px] font-medium text-primary-500 hover:text-primary-400 transition-colors"
                       >
                         Take the Quiz
                         <i className="ri-arrow-right-line text-[13px]"></i>
                       </Link>
                       <Link
-                        href="/shop"
+                        to="/shop"
                         className="inline-flex items-center h-8 px-4 rounded-md bg-primary-500 text-background-900 text-[11px] font-semibold hover:bg-primary-400 transition-all duration-300 ease-precision whitespace-nowrap"
                       >
                         Shop All
@@ -236,7 +236,7 @@ export default function Header() {
                 onMouseLeave={scheduleCloseContactMenu}
               >
                 <Link
-                  href={link.href}
+                  to={link.href}
                   className="flex items-center gap-1.5 text-[14.5px] tracking-wide text-foreground-300 hover:text-foreground-100 transition-colors relative group"
                   aria-expanded={contactMenuOpen}
                 >
@@ -260,7 +260,7 @@ export default function Header() {
                   {CONTACT_DROPDOWN.map((item) => (
                     <Link
                       key={item.slug}
-                      href={item.href}
+                      to={item.href}
                       className="group/item flex items-start gap-3 px-4 py-3.5 hover:bg-background-100/70 transition-colors duration-300 ease-precision border-b border-background-200/40 last:border-none"
                     >
                       <span className="w-8 h-8 flex items-center justify-center rounded-md bg-primary-500/10 text-primary-500 shrink-0 group-hover/item:bg-primary-500 group-hover/item:text-background-900 transition-all duration-300 ease-precision">
@@ -281,7 +281,7 @@ export default function Header() {
             ) : (
               <Link
                 key={link.href}
-                href={link.href}
+                to={link.href}
                 className="text-[14.5px] tracking-wide text-foreground-300 hover:text-foreground-100 transition-colors relative group"
               >
                 {link.label}
@@ -299,7 +299,7 @@ export default function Header() {
             <i className="ri-search-line text-[17px]"></i>
           </button>
           <Link
-            href="/account"
+            to="/account"
             className="hidden md:flex w-9 h-9 items-center justify-center rounded-md text-foreground-300 hover:text-primary-500 hover:bg-background-200/60 transition-colors cursor-pointer"
           >
             <i className="ri-user-line text-[17px]"></i>
@@ -317,7 +317,7 @@ export default function Header() {
             )}
           </button>
           <Link
-            href="/shop"
+            to="/shop"
             className="hidden md:inline-flex ml-2 h-9 items-center px-4 rounded-md bg-primary-500 text-background-900 text-[12px] font-semibold tracking-wide hover:bg-primary-400 transition-all duration-300 ease-precision hover:shadow-[0_0_24px_-4px_rgb(var(--primary-500) / 0.6)] whitespace-nowrap cursor-pointer"
           >
             Shop Peptides
@@ -346,7 +346,7 @@ export default function Header() {
                 <div key={link.href} className="border-b border-background-200/40">
                   <div className="flex items-center justify-between py-3">
                     <Link
-                      href={link.href}
+                      to={link.href}
                       onClick={() => setMenuOpen(false)}
                       className="text-[14.5px] tracking-wide text-foreground-300 hover:text-foreground-100 transition-colors"
                     >
@@ -369,7 +369,7 @@ export default function Header() {
                       {SHOP_PROTOCOLS.map((proto) => (
                         <div key={proto.slug}>
                           <Link
-                            href={proto.href}
+                            to={proto.href}
                             onClick={() => setMenuOpen(false)}
                             className="flex items-center gap-2 pl-2 text-[12px] font-semibold text-foreground-300 hover:text-primary-500 transition-colors uppercase tracking-wide"
                           >
@@ -383,7 +383,7 @@ export default function Header() {
                               return (
                                 <Link
                                   key={slug}
-                                  href={`/product/${slug}`}
+                                  to={`/product/${slug}`}
                                   onClick={() => setMenuOpen(false)}
                                   className="py-1.5 text-[12px] text-foreground-500 hover:text-primary-500 transition-colors"
                                 >
@@ -396,14 +396,14 @@ export default function Header() {
                       ))}
                       <div className="flex items-center gap-4 pl-2 pt-1">
                         <Link
-                          href="/quiz"
+                          to="/quiz"
                           onClick={() => setMenuOpen(false)}
                           className="inline-flex items-center gap-1.5 text-[12px] font-medium text-primary-500"
                         >
                           Take the Quiz <i className="ri-arrow-right-line text-[13px]"></i>
                         </Link>
                         <Link
-                          href="/shop"
+                          to="/shop"
                           onClick={() => setMenuOpen(false)}
                           className="inline-flex items-center h-8 px-4 rounded-md bg-primary-500 text-background-900 text-[11px] font-semibold whitespace-nowrap"
                         >
@@ -417,7 +417,7 @@ export default function Header() {
                 <div key={link.href} className="border-b border-background-200/40">
                   <div className="flex items-center justify-between py-3">
                     <Link
-                      href={link.href}
+                      to={link.href}
                       onClick={() => setMenuOpen(false)}
                       className="text-[14.5px] tracking-wide text-foreground-300 hover:text-foreground-100 transition-colors"
                     >
@@ -440,7 +440,7 @@ export default function Header() {
                       {CONTACT_DROPDOWN.map((item) => (
                         <Link
                           key={item.slug}
-                          href={item.href}
+                          to={item.href}
                           onClick={() => setMenuOpen(false)}
                           className="flex items-center gap-2.5 py-2 pl-2 text-[12px] text-foreground-400 hover:text-primary-500 transition-colors"
                         >
@@ -454,7 +454,7 @@ export default function Header() {
               ) : (
                 <Link
                   key={link.href}
-                  href={link.href}
+                  to={link.href}
                   onClick={() => setMenuOpen(false)}
                   className="py-3 text-[14.5px] tracking-wide text-foreground-300 hover:text-foreground-100 transition-colors border-b border-background-200/40 last:border-none"
                 >

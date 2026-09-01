@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import PromoBanner from "@/components/PromoBanner";
 import { getProduct } from "@/lib/product-types";
@@ -73,7 +73,7 @@ function ProductLine({ slug, text, badge }: { slug: string; text: string; badge:
   if (!product) return null;
   return (
     <Link
-      href={`/product/${slug}`}
+      to={`/product/${slug}`}
       className="group block rounded-xl border border-background-200/60 bg-background-900/50 p-4 transition-colors hover:border-primary-500/40"
     >
       <div className="flex items-center justify-between gap-3">
@@ -304,7 +304,7 @@ export default function QuizPage() {
                       Retake the quiz
                     </button>
                     <Link
-                      href="/shop"
+                      to="/shop"
                       className="h-10 px-5 rounded-md bg-primary-500 text-background-900 text-[13px] font-semibold hover:bg-primary-400 transition-all duration-300 ease-precision inline-flex items-center cursor-pointer"
                     >
                       Browse full shop →

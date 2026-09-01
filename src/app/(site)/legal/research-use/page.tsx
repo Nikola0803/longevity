@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import LegalShell from "@/components/legal/LegalShell";
 import {
   LegalSection,
@@ -10,12 +9,6 @@ import {
   ContactCard,
 } from "@/components/legal/LegalUI";
 import { SITE, LEGAL_ROUTES } from "@/data/site-config";
-
-export const metadata: Metadata = {
-  title: "Research Use Only Policy · LONGEVITY PEPTIDES",
-  description:
-    "All Longevity Peptides products are supplied exclusively for in vitro research and laboratory use by qualified professionals. Not for human consumption.",
-};
 
 const related = [
   { label: "Privacy Policy", href: LEGAL_ROUTES.privacy },

@@ -1,15 +1,7 @@
-import type { Metadata } from "next";
 import Header from "@/components/Header";
 import PromoBanner from "@/components/PromoBanner";
 import CoaGrid from "@/components/CoaGrid";
 import { COA_RECORDS } from "@/data/coa-records";
-
-export const metadata: Metadata = {
-  title: "COA Archive",
-  description:
-    "Every Longevity Peptides Certificate of Analysis, publicly searchable by batch code. Independent third-party lab results for every compound we ship.",
-  alternates: { canonical: "/coa" },
-};
 
 export default function CoaPage() {
   return (

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import Image from "next/image";
+import { Link } from "react-router-dom";
+import Image from "@/components/Image";
 import Header from "@/components/Header";
 import PromoBanner from "@/components/PromoBanner";
 import Footer from "@/components/Footer";
@@ -73,11 +73,11 @@ export default function ProductPageClient({ slug }: { slug: string }) {
         <section className="pt-[96px] bg-background-900 border-b border-background-200/60">
           <div className="w-full max-w-[1440px] mx-auto px-6 md:px-10 py-5">
             <nav className="flex items-center gap-2 text-[12px] text-foreground-500 font-mono">
-              <Link href="/" className="hover:text-primary-500 transition-colors">Home</Link>
+              <Link to="/" className="hover:text-primary-500 transition-colors">Home</Link>
               <span>/</span>
-              <Link href="/shop" className="hover:text-primary-500 transition-colors">Shop</Link>
+              <Link to="/shop" className="hover:text-primary-500 transition-colors">Shop</Link>
               <span>/</span>
-              <Link href={`/shop/${product.category.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`} className="hover:text-primary-500 transition-colors">
+              <Link to={`/shop/${product.category.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`} className="hover:text-primary-500 transition-colors">
                 {product.category}
               </Link>
               <span>/</span>
@@ -198,7 +198,7 @@ export default function ProductPageClient({ slug }: { slug: string }) {
                       {packVariants.map((v) => (
                         <Link
                           key={v.slug}
-                          href={`/product/${v.slug}`}
+                          to={`/product/${v.slug}`}
                           className={`px-3 py-2 rounded-md font-mono text-[11px] tracking-wide border transition-all duration-300 ease-precision cursor-pointer ${
                             v.slug === product.slug
                               ? "bg-primary-500 text-background-900 border-primary-500"
@@ -355,7 +355,7 @@ export default function ProductPageClient({ slug }: { slug: string }) {
                       <i className="ri-shield-check-line text-[14px]"></i>View COA · Batch {batchCode}
                     </button>
                     <Link
-                      href="/coa"
+                      to="/coa"
                       className="inline-flex items-center gap-2 h-10 px-6 rounded-md border border-background-200 text-[13px] text-foreground-300 hover:border-primary-500 hover:text-primary-500 transition-all cursor-pointer"
                     >
                       <i className="ri-archive-line text-[14px]"></i>Browse all COAs
@@ -417,7 +417,7 @@ export default function ProductPageClient({ slug }: { slug: string }) {
                   <h2 className="font-display text-[28px] text-foreground-100">Related Compounds</h2>
                   <p className="text-[13px] text-foreground-500 mt-1">Frequently researched together</p>
                 </div>
-                <Link href="/shop" className="group hidden sm:inline-flex items-center gap-2 text-[13px] text-foreground-400 hover:text-primary-500 transition-colors cursor-pointer">
+                <Link to="/shop" className="group hidden sm:inline-flex items-center gap-2 text-[13px] text-foreground-400 hover:text-primary-500 transition-colors cursor-pointer">
                   View all<i className="ri-arrow-right-line group-hover:translate-x-1 transition-transform"></i>
                 </Link>
               </div>

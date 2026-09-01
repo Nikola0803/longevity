@@ -1,14 +1,6 @@
-import type { Metadata } from "next";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import PromoBanner from "@/components/PromoBanner";
-
-export const metadata: Metadata = {
-  title: "Contact Us",
-  description:
-    "Australia-based support available 7 days a week for product questions, bulk orders, and documentation. We respond within 24 hours.",
-  alternates: { canonical: "/contact" },
-};
 
 export default function ContactPage() {
   return (
