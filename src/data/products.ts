@@ -40,10 +40,27 @@ function peptide(opts: {
     statusLabel: "In Stock",
     disabled: false,
     buttonText: "Add to Cart",
+    packSize: 1,
   };
 }
 
-export const PRODUCTS: Product[] = [
+/** Adds a 10-vial kit alongside the single vial, at a 10% bulk discount off 10x the single price. */
+function withKit(p: Product, discountPct = 10): Product[] {
+  const kitPrice = Math.round(p.price * 10 * (1 - discountPct / 100));
+  return [
+    p,
+    {
+      ...p,
+      slug: `${p.slug}-10pack`,
+      packSize: 10,
+      price: kitPrice,
+      imgAlt: `${p.imgAlt} — 10-pack kit`,
+      imgTitle: `${p.imgTitle} · 10-Pack Kit`,
+    },
+  ];
+}
+
+const BASE_PRODUCTS: Product[] = [
   peptide({
     name: "Tirzepatide",
     slug: "tirzepatide",
@@ -250,4 +267,7 @@ export const PRODUCTS: Product[] = [
     category: "Research Supplies",
     image: "https://longevitytech-lab.store/__l5e/assets-v1/ba5960b9-0cca-42a5-bae0-df61bdfea0b2/bac_water.png",
     description: "Bacteriostatic water for reconstituting lyophilized research peptides.",
-  }),];
+  }),
+];
+
+export const PRODUCTS: Product[] = BASE_PRODUCTS.flatMap((p) => withKit(p));

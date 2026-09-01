@@ -16,6 +16,11 @@ export interface CartItem {
   price: number;
   image: string;
   qty: number;
+  /** Numeric WooCommerce product/variation id — required to add this item
+   * to a real Store API cart at checkout (see src/lib/woo-store-api.ts).
+   * Absent for fallback-catalog items with no live Woo product behind them. */
+  wooProductId?: number;
+  wooVariationId?: number;
 }
 
 interface CartContextValue {

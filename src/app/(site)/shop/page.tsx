@@ -21,11 +21,21 @@ const CATEGORIES = [
 
 const SORTS = ["Featured", "Price: Low to High", "Price: High to Low", "Purity %"];
 
+// Format filter is ours, not a copy of any reference site's taxonomy — it
+// just exposes the packSize dimension (single vial vs 10-pack kit) added
+// alongside the existing category rail below.
+const FORMATS = [
+  { label: "All Formats", value: "all" },
+  { label: "Individual Vials", value: "single" },
+  { label: "10-Pack Kits", value: "kit" },
+];
+
 function ShopPageInner() {
   const searchParams = useSearchParams();
   const products = useProducts();
   const VISIBLE = useMemo(() => products.filter((p) => !p.hidden), [products]);
   const [activeCategory, setActiveCategory] = useState("all");
+  const [activeFormat, setActiveFormat] = useState("all");
   const [sortBy, setSortBy] = useState("Featured");
   const [search, setSearch] = useState("");
 
@@ -40,6 +50,8 @@ function ShopPageInner() {
   const filtered = useMemo(() => {
     let list = VISIBLE;
     if (activeCategory !== "all") list = list.filter((p) => p.category === activeCategory);
+    if (activeFormat === "single") list = list.filter((p) => (p.packSize ?? 1) <= 1);
+    else if (activeFormat === "kit") list = list.filter((p) => (p.packSize ?? 1) > 1);
     if (search.trim()) {
       const q = search.toLowerCase();
       list = list.filter((p) => p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q));
@@ -48,7 +60,7 @@ function ShopPageInner() {
     else if (sortBy === "Price: High to Low") list = [...list].sort((a, b) => b.price - a.price);
     else if (sortBy === "Purity %") list = [...list].sort((a, b) => parseFloat(b.purity) - parseFloat(a.purity));
     return list;
-  }, [activeCategory, sortBy, search, VISIBLE]);
+  }, [activeCategory, activeFormat, sortBy, search, VISIBLE]);
 
   const countFor = (cat: string) =>
     cat === "all" ? VISIBLE.length : VISIBLE.filter((p) => p.category === cat).length;
@@ -129,22 +141,42 @@ function ShopPageInner() {
               <span className="font-mono text-foreground-200">{VISIBLE.length}</span>
               <span className="ml-1">compounds</span>
             </p>
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] font-mono tracking-[0.2em] text-foreground-600 uppercase mr-1">Sort</span>
-              <div className="flex items-center bg-background-100 rounded-md border border-background-200 p-0.5 overflow-x-auto no-scrollbar">
-                {SORTS.map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => setSortBy(s)}
-                    className={`px-3 py-1.5 rounded text-[12px] transition-all whitespace-nowrap cursor-pointer ${
-                      sortBy === s
-                        ? "bg-primary-500 text-background-900 font-semibold"
-                        : "text-foreground-400 hover:text-foreground-200"
-                    }`}
-                  >
-                    {s}
-                  </button>
-                ))}
+            <div className="flex flex-wrap items-center gap-4">
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] font-mono tracking-[0.2em] text-foreground-600 uppercase mr-1">Format</span>
+                <div className="flex items-center bg-background-100 rounded-md border border-background-200 p-0.5">
+                  {FORMATS.map((f) => (
+                    <button
+                      key={f.value}
+                      onClick={() => setActiveFormat(f.value)}
+                      className={`px-3 py-1.5 rounded text-[12px] transition-all whitespace-nowrap cursor-pointer ${
+                        activeFormat === f.value
+                          ? "bg-primary-500 text-background-900 font-semibold"
+                          : "text-foreground-400 hover:text-foreground-200"
+                      }`}
+                    >
+                      {f.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] font-mono tracking-[0.2em] text-foreground-600 uppercase mr-1">Sort</span>
+                <div className="flex items-center bg-background-100 rounded-md border border-background-200 p-0.5 overflow-x-auto no-scrollbar">
+                  {SORTS.map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => setSortBy(s)}
+                      className={`px-3 py-1.5 rounded text-[12px] transition-all whitespace-nowrap cursor-pointer ${
+                        sortBy === s
+                          ? "bg-primary-500 text-background-900 font-semibold"
+                          : "text-foreground-400 hover:text-foreground-200"
+                      }`}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -157,7 +189,7 @@ function ShopPageInner() {
               <i className="ri-search-line text-[40px] text-foreground-600 mb-4"></i>
               <p className="text-foreground-400 text-[15px] mb-2">No compounds match your search.</p>
               <button
-                onClick={() => { setSearch(""); setActiveCategory("all"); }}
+                onClick={() => { setSearch(""); setActiveCategory("all"); setActiveFormat("all"); }}
                 className="mt-4 h-9 px-5 rounded-md border border-background-200 text-[13px] text-foreground-300 hover:border-primary-500 hover:text-primary-500 transition-all cursor-pointer"
               >
                 Clear filters

@@ -102,22 +102,28 @@ function adaptWooProduct(p: WooProduct, variations: WooVariation[]): Product[] {
         statusLabel: inStock ? "In Stock" : "Backordered",
         disabled: !inStock,
         buttonText: inStock ? "Add to Cart" : "Unavailable",
+        wooProductId: p.id,
       },
     ];
   }
 
-  // Dose (5mg/10mg) and pack-count (1x/10x) both ride on Woo variation
-  // attributes — whichever attribute names your store uses show up here as
-  // the spec label; adjust the regex below if your attribute names differ.
+  // Dose (5mg/10mg) and pack-count (1x/10x) ride on separate Woo variation
+  // attributes — whichever attribute names your store uses for each show up
+  // here as `spec` (dose) and `packSize` (vials per unit); adjust the
+  // regexes below if your attribute names differ.
   return variations.map((v) => {
+    const packAttr = v.attributes.find((a) => /pack|qty|quantity|count/i.test(a.name));
+    const doseAttr = v.attributes.find((a) => /dose|size|dosage|spec/i.test(a.name));
     const spec =
-      v.attributes.find((a) => /dose|size|spec|pack|qty|quantity/i.test(a.name))?.option ??
-      v.attributes.map((a) => a.option).join(" / ");
+      doseAttr?.option ??
+      v.attributes.filter((a) => a !== packAttr).map((a) => a.option).join(" / ");
+    const packSize = packAttr ? parseInt(packAttr.option, 10) || 1 : 1;
     const price = parseFloat(v.price || v.regular_price || "0");
     const inStock = v.stock_status === "instock";
-    const slugSuffix = spec ? `-${spec.toLowerCase().replace(/\s+/g, "")}` : "";
+    const specSuffix = spec ? `-${spec.toLowerCase().replace(/\s+/g, "")}` : "";
+    const packSuffix = packSize > 1 ? `-${packSize}pack` : "";
     return {
-      slug: `${p.slug}${slugSuffix}`,
+      slug: `${p.slug}${specSuffix}${packSuffix}`,
       name: p.name,
       spec,
       price,
@@ -133,6 +139,9 @@ function adaptWooProduct(p: WooProduct, variations: WooVariation[]): Product[] {
       statusLabel: inStock ? "In Stock" : "Backordered",
       disabled: !inStock,
       buttonText: inStock ? "Add to Cart" : "Unavailable",
+      wooProductId: p.id,
+      wooVariationId: v.id,
+      packSize,
     };
   });
 }

@@ -9,7 +9,7 @@ import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
 import CoaModal from "@/components/CoaModal";
 import { useCart } from "@/lib/cart-context";
-import { getProduct, getRating } from "@/lib/product-types";
+import { getProduct, getPackVariants, getPackLabel, getRating } from "@/lib/product-types";
 import { useProducts, useProductsLoading } from "@/lib/products-context";
 import StarRating from "@/components/StarRating";
 
@@ -44,6 +44,7 @@ export default function ProductPageClient({ slug }: { slug: string }) {
   }
 
   const rating = getRating(product);
+  const packVariants = getPackVariants(products, product);
 
   // Related: same category, exclude self, max 4
   const related = products.filter(
@@ -57,6 +58,8 @@ export default function ProductPageClient({ slug }: { slug: string }) {
       spec: product.spec,
       price: product.price,
       image: product.image,
+      wooProductId: product.wooProductId,
+      wooVariationId: product.wooVariationId,
     });
   };
 
@@ -188,6 +191,23 @@ export default function ProductPageClient({ slug }: { slug: string }) {
                     <div className="flex items-center gap-2 mb-5">
                       <span className="w-1.5 h-1.5 rounded-full bg-yellow-400"></span>
                       <span className="text-[12px] font-medium text-yellow-400">{product.statusLabel} · order soon</span>
+                    </div>
+                  )}
+                  {packVariants.length > 1 && (
+                    <div className="flex flex-wrap gap-2 mb-5">
+                      {packVariants.map((v) => (
+                        <Link
+                          key={v.slug}
+                          href={`/product/${v.slug}`}
+                          className={`px-3 py-2 rounded-md font-mono text-[11px] tracking-wide border transition-all duration-300 ease-precision cursor-pointer ${
+                            v.slug === product.slug
+                              ? "bg-primary-500 text-background-900 border-primary-500"
+                              : "bg-background-100 text-foreground-400 border-background-200/60 hover:border-primary-500/50 hover:text-primary-500"
+                          }`}
+                        >
+                          {getPackLabel(v)} · {fmt(v.price)}
+                        </Link>
+                      ))}
                     </div>
                   )}
                   <div className="flex items-center gap-3 mb-5 p-3 rounded-md bg-background-100/50 border border-background-200/40">
