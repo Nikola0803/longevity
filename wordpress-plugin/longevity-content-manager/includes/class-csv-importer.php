@@ -11,8 +11,14 @@
  * synchronously downloading every product image mid-request. This importer
  * instead:
  *   - Writes products directly via WooCommerce's PHP API (WC_Product_*),
- *     not the REST API or the browser-driven admin importer — far fewer
- *     round trips, and it can raise its own time limit.
+ *     not the REST API or the browser-driven admin importer.
+ *   - Runs in small AJAX steps (a handful of products per request) instead
+ *     of one long request, so it never runs into a reverse-proxy timeout
+ *     (nginx's default proxy_read_timeout, or PHP-FPM's
+ *     request_terminate_timeout) — those sit in front of PHP and will kill
+ *     a slow request regardless of anything set_time_limit() does inside
+ *     PHP itself. The browser just calls one small step, then the next,
+ *     showing progress, until done.
  *   - Tolerates a failed image download per-row instead of aborting the
  *     whole batch — the product still gets created, just without a photo,
  *     and the failure is reported so it can be fixed and re-run (imports
@@ -20,8 +26,8 @@
  *   - Maps every product into this site's own category taxonomy (Fat Loss
  *     & Metabolic, Recovery & Repair, Longevity, Cognitive, Peptides,
  *     Peptide Blends, Research Supplies — the same categories the
- *     Next.js/Vite storefront's shop page filters by) instead of trusting
- *     the export's own inconsistent category tags.
+ *     storefront's shop page filters by) instead of trusting the export's
+ *     own inconsistent category tags.
  *   - Recognizes the "<Compound> Kit" vs "<Compound>" naming convention
  *     this export uses for 10-vial bulk kits vs single vials, and tags
  *     each with `_lpcm_pack_size` (10 or 1) accordingly - read back out by
@@ -35,8 +41,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class LPCM_CSV_Importer {
 
+	/** Products created (with image downloads) per AJAX step - keeps each request short enough to never hit a reverse-proxy timeout. */
+	const MAIN_BATCH_SIZE = 3;
+	/** Variation groups attached per step - no image downloads here, so a larger batch is still fast. */
+	const VARIATION_BATCH_SIZE = 5;
+
 	public static function init() {
 		add_action( 'admin_menu', [ __CLASS__, 'add_menu' ] );
+		add_action( 'wp_ajax_lpcm_import_start', [ __CLASS__, 'ajax_start' ] );
+		add_action( 'wp_ajax_lpcm_import_step', [ __CLASS__, 'ajax_step' ] );
 	}
 
 	public static function add_menu() {
@@ -107,14 +120,6 @@ class LPCM_CSV_Importer {
 	}
 
 	public static function render() {
-		$results = null;
-		if ( isset( $_POST['lpcm_run_import'] ) && check_admin_referer( 'lpcm_run_import' ) ) {
-			if ( empty( $_FILES['lpcm_csv_file']['tmp_name'] ) || ! is_uploaded_file( $_FILES['lpcm_csv_file']['tmp_name'] ) ) {
-				$results = [ [ 'ok' => false, 'msg' => 'No file uploaded, or the upload failed.' ] ];
-			} else {
-				$results = self::run_import( $_FILES['lpcm_csv_file']['tmp_name'] );
-			}
-		}
 		?>
 		<div class="wrap">
 			<h1>Import Products (CSV)</h1>
@@ -123,213 +128,367 @@ class LPCM_CSV_Importer {
 					Upload a standard WooCommerce product-export CSV (the same
 					column format <strong>Products → Export</strong> produces:
 					<code>ID, Type, SKU, ..., Categories, ..., Images, ..., Parent, ..., Attribute 1 name, ...</code>).
-					Runs entirely server-side via WooCommerce's PHP API - no
-					browser timeout, no partial imports. Safe to re-run: existing
-					products are matched by slug and updated in place, not
-					duplicated. Categories are mapped automatically to this
-					site's own taxonomy (Fat Loss &amp; Metabolic, Recovery &amp;
-					Repair, Longevity, Cognitive, Peptides, Peptide Blends,
-					Research Supplies), and any product named
+					Runs in small steps in the background - never one long
+					request, so it can't be cut off by a reverse-proxy timeout
+					no matter how large the file or how slow the image
+					downloads are. Safe to re-run: existing products are
+					matched by slug and updated in place, not duplicated.
+					Categories are mapped automatically to this site's own
+					taxonomy (Fat Loss &amp; Metabolic, Recovery &amp; Repair,
+					Longevity, Cognitive, Peptides, Peptide Blends, Research
+					Supplies), and any product named
 					"<code>&lt;Compound&gt; Kit</code>" is tagged as a 10-vial
 					pack automatically - no separate step needed.
 				</p>
 
-				<?php if ( $results !== null ) : ?>
-					<div style="background:#f0fdf4;border:1px solid #bbf7d0;padding:16px;border-radius:4px;margin-bottom:16px;max-height:420px;overflow-y:auto;">
-						<p style="font-weight:700;color:#166534;margin:0 0 10px;">Import finished.</p>
-						<?php foreach ( $results as $r ) :
-							$color = $r['ok'] ? '#15803d' : '#b45309'; ?>
-							<div style="font-family:monospace;font-size:12px;color:<?php echo esc_attr( $color ); ?>;margin-bottom:3px;">
-								<?php echo $r['ok'] ? '✅' : '⚠️'; ?> <?php echo esc_html( $r['msg'] ); ?>
-							</div>
-						<?php endforeach; ?>
+				<div id="lpcm-import-progress" style="display:none;margin-bottom:16px;">
+					<div style="background:#f3f4f6;border-radius:4px;height:10px;overflow:hidden;margin-bottom:8px;">
+						<div id="lpcm-import-bar" style="background:#2563eb;height:100%;width:0%;transition:width .3s;"></div>
 					</div>
-				<?php endif; ?>
+					<p id="lpcm-import-status" style="font-size:12px;color:#555;margin:0;">Starting…</p>
+				</div>
 
-				<form method="post" enctype="multipart/form-data">
-					<?php wp_nonce_field( 'lpcm_run_import' ); ?>
-					<input type="file" name="lpcm_csv_file" accept=".csv" required style="margin-bottom:16px;display:block;">
-					<button type="submit" name="lpcm_run_import" value="1" class="button button-primary" style="font-size:14px;height:38px;padding:0 20px;">
+				<div id="lpcm-import-log" style="display:none;background:#f0fdf4;border:1px solid #bbf7d0;padding:16px;border-radius:4px;margin-bottom:16px;max-height:420px;overflow-y:auto;"></div>
+
+				<form id="lpcm-import-form" enctype="multipart/form-data">
+					<?php wp_nonce_field( 'lpcm_run_import', 'lpcm_import_nonce' ); ?>
+					<input type="file" name="lpcm_csv_file" id="lpcm-import-file" accept=".csv" required style="margin-bottom:16px;display:block;">
+					<button type="submit" id="lpcm-import-submit" class="button button-primary" style="font-size:14px;height:38px;padding:0 20px;">
 						📦 Run Import
 					</button>
 				</form>
 			</div>
 		</div>
+		<script>
+		(function () {
+			var form = document.getElementById('lpcm-import-form');
+			var submitBtn = document.getElementById('lpcm-import-submit');
+			var progressWrap = document.getElementById('lpcm-import-progress');
+			var bar = document.getElementById('lpcm-import-bar');
+			var status = document.getElementById('lpcm-import-status');
+			var log = document.getElementById('lpcm-import-log');
+			var ajaxUrl = '<?php echo esc_js( admin_url( 'admin-ajax.php' ) ); ?>';
+			var nonce = document.getElementById('lpcm_import_nonce').value;
+
+			function appendResults(results) {
+				log.style.display = 'block';
+				(results || []).forEach(function (r) {
+					var line = document.createElement('div');
+					line.style.fontFamily = 'monospace';
+					line.style.fontSize = '12px';
+					line.style.color = r.ok ? '#15803d' : '#b45309';
+					line.style.marginBottom = '3px';
+					line.textContent = (r.ok ? '✅ ' : '⚠️ ') + r.msg;
+					log.appendChild(line);
+				});
+				log.scrollTop = log.scrollHeight;
+			}
+
+			// Step count is tracked client-side (stepsDone / totalSteps), not
+			// by the server — each AJAX call is a single sequential step this
+			// loop itself is driving, so it always knows exactly how many
+			// it's made without the server needing to persist a counter.
+			var stepsDone = 0;
+			var totalSteps = 1;
+
+			function step(jobId) {
+				var body = new FormData();
+				body.append('action', 'lpcm_import_step');
+				body.append('nonce', nonce);
+				body.append('job_id', jobId);
+
+				fetch(ajaxUrl, { method: 'POST', credentials: 'same-origin', body: body })
+					.then(function (r) { return r.json(); })
+					.then(function (json) {
+						if (!json.success) {
+							status.textContent = 'Error: ' + (json.data && json.data.message ? json.data.message : 'unknown error');
+							submitBtn.disabled = false;
+							return;
+						}
+						var data = json.data;
+						appendResults(data.results);
+						stepsDone = Math.min(stepsDone + 1, totalSteps);
+						var pct = Math.round((stepsDone / totalSteps) * 100);
+						bar.style.width = pct + '%';
+						status.textContent = data.done
+							? 'Done — ' + stepsDone + ' of ' + totalSteps + ' steps complete.'
+							: 'Importing… ' + stepsDone + ' of ' + totalSteps + ' steps complete.';
+
+						if (data.done) {
+							bar.style.width = '100%';
+							submitBtn.disabled = false;
+						} else {
+							step(jobId);
+						}
+					})
+					.catch(function (err) {
+						status.textContent = 'Request failed: ' + err.message + ' — retrying…';
+						setTimeout(function () { step(jobId); }, 2000);
+					});
+			}
+
+			form.addEventListener('submit', function (e) {
+				e.preventDefault();
+				submitBtn.disabled = true;
+				log.innerHTML = '';
+				log.style.display = 'none';
+				progressWrap.style.display = 'block';
+				bar.style.width = '0%';
+				status.textContent = 'Uploading and reading file…';
+				stepsDone = 0;
+				totalSteps = 1;
+
+				var body = new FormData();
+				body.append('action', 'lpcm_import_start');
+				body.append('nonce', nonce);
+				body.append('lpcm_csv_file', document.getElementById('lpcm-import-file').files[0]);
+
+				fetch(ajaxUrl, { method: 'POST', credentials: 'same-origin', body: body })
+					.then(function (r) { return r.json(); })
+					.then(function (json) {
+						if (!json.success) {
+							status.textContent = 'Error: ' + (json.data && json.data.message ? json.data.message : 'unknown error');
+							submitBtn.disabled = false;
+							return;
+						}
+						totalSteps = json.data.total;
+						status.textContent = 'Parsed ' + totalSteps + ' step(s). Importing…';
+						step(json.data.job_id);
+					})
+					.catch(function (err) {
+						status.textContent = 'Upload failed: ' + err.message;
+						submitBtn.disabled = false;
+					});
+			});
+		})();
+		</script>
 		<?php
 	}
 
-	public static function run_import( string $tmp_path ): array {
+	// ---------------------------------------------------------------
+	// AJAX: start - parse the CSV (fast, no images) and queue the work
+	// ---------------------------------------------------------------
+
+	public static function ajax_start() {
+		check_ajax_referer( 'lpcm_run_import', 'nonce' );
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_send_json_error( [ 'message' => 'Insufficient permissions.' ], 403 );
+		}
 		if ( ! class_exists( 'WC_Product_Simple' ) ) {
-			return [ [ 'ok' => false, 'msg' => 'WooCommerce is not active. Cannot import products.' ] ];
+			wp_send_json_error( [ 'message' => 'WooCommerce is not active.' ] );
+		}
+		if ( empty( $_FILES['lpcm_csv_file']['tmp_name'] ) || ! is_uploaded_file( $_FILES['lpcm_csv_file']['tmp_name'] ) ) {
+			wp_send_json_error( [ 'message' => 'No file uploaded, or the upload failed.' ] );
 		}
 
-		$handle = fopen( $tmp_path, 'r' );
+		$handle = fopen( $_FILES['lpcm_csv_file']['tmp_name'], 'r' );
 		if ( ! $handle ) {
-			return [ [ 'ok' => false, 'msg' => 'Could not open the uploaded file.' ] ];
+			wp_send_json_error( [ 'message' => 'Could not open the uploaded file.' ] );
 		}
-
-		// Don't let PHP's default 30s CLI/FPM limit or the browser connection
-		// cut this off partway through a ~90-row batch with image downloads.
-		if ( function_exists( 'set_time_limit' ) ) {
-			@set_time_limit( 300 );
-		}
-		ignore_user_abort( true );
 
 		$header = fgetcsv( $handle );
 		if ( ! $header ) {
 			fclose( $handle );
-			return [ [ 'ok' => false, 'msg' => 'Empty or unreadable CSV.' ] ];
+			wp_send_json_error( [ 'message' => 'Empty or unreadable CSV.' ] );
 		}
 		$col = array_flip( array_map( 'trim', $header ) );
 
-		$get = function ( array $row, string $key ) use ( $col ) {
-			return isset( $col[ $key ], $row[ $col[ $key ] ] ) ? trim( (string) $row[ $col[ $key ] ] ) : '';
-		};
-
-		$results       = [];
-		// Maps this CSV's own "ID" column values to the real WooCommerce
-		// product IDs created during this run, so variation rows (which
-		// reference their parent via "id:<original id>") can find the
-		// right parent regardless of what ID WooCommerce actually assigns.
-		$id_map        = [];
-		$pending_variations = []; // original_parent_id => [ row, ... ]
+		$main_rows           = [];
+		$variation_rows      = []; // original_parent_id (string) => [ row-as-assoc, ... ]
 
 		while ( ( $row = fgetcsv( $handle ) ) !== false ) {
 			if ( count( $row ) < 2 ) {
 				continue; // blank trailing line
 			}
+			$assoc = self::row_to_assoc( $row, $col );
 
-			$type          = $get( $row, 'Type' );
-			$original_id   = $get( $row, 'ID' );
-			$name          = $get( $row, 'Name' );
-			$parent_ref    = $get( $row, 'Parent' );
-
-			if ( $type === 'variation' ) {
-				// Deferred until after every parent row is created (variation
-				// rows always follow their parent in this export, but don't
-				// rely on that - collect first, attach after the full pass).
-				$parent_id = 0;
-				if ( preg_match( '/^id:(\d+)$/', $parent_ref, $m ) ) {
-					$parent_id = (int) $m[1];
+			if ( $assoc['Type'] === 'variation' ) {
+				$parent_id = '';
+				if ( preg_match( '/^id:(\d+)$/', $assoc['Parent'] ?? '', $m ) ) {
+					$parent_id = $m[1];
 				}
-				$pending_variations[ $parent_id ][] = $row;
-				continue;
-			}
-
-			try {
-				[ $base_name, $pack_size ] = self::split_kit_name( $name );
-				$category = self::category_for( $base_name );
-
-				$product = ( $type === 'variable' )
-					? new WC_Product_Variable()
-					: new WC_Product_Simple();
-
-				$slug = sanitize_title( $name );
-				$existing_id = self::find_product_id_by_slug( $slug );
-				if ( $existing_id ) {
-					$product = wc_get_product( $existing_id );
-				}
-
-				$product->set_name( $name );
-				$product->set_slug( $slug );
-				$product->set_status( 'publish' );
-				$product->set_catalog_visibility( 'visible' );
-				$product->set_description( wp_kses_post( $get( $row, 'Description' ) ) );
-				$product->set_short_description( wp_kses_post( $get( $row, 'Short description' ) ) );
-				$product->set_reviews_allowed( true );
-
-				if ( $type === 'simple' ) {
-					$price = $get( $row, 'Regular price' );
-					if ( $price !== '' ) {
-						$product->set_regular_price( $price );
-					}
-					$product->set_manage_stock( false );
-					$product->set_stock_status( 'instock' );
-				}
-
-				self::assign_category( $product, $category );
-
-				$product_id = $product->save();
-				update_post_meta( $product_id, '_lpcm_pack_size', $pack_size );
-
-				if ( $original_id !== '' ) {
-					$id_map[ $original_id ] = $product_id;
-				}
-
-				$image_url = $get( $row, 'Images' );
-				if ( $image_url ) {
-					$outcome = self::sideload_and_set_thumbnail( $product_id, $image_url );
-					if ( is_wp_error( $outcome ) ) {
-						$results[] = [ 'ok' => false, 'msg' => "{$name} — created (ID {$product_id}), but image failed: {$outcome->get_error_message()}" ];
-					} else {
-						$results[] = [ 'ok' => true, 'msg' => "{$name} — {$type}, category \"{$category}\", pack size {$pack_size}, image set." ];
-					}
-				} else {
-					$results[] = [ 'ok' => true, 'msg' => "{$name} — {$type}, category \"{$category}\", pack size {$pack_size}, no image in file." ];
-				}
-			} catch ( Exception $e ) {
-				$results[] = [ 'ok' => false, 'msg' => "{$name} — failed: {$e->getMessage()}" ];
+				$variation_rows[ $parent_id ][] = $assoc;
+			} else {
+				$main_rows[] = $assoc;
 			}
 		}
 		fclose( $handle );
 
-		// Second pass: attach every collected variation row to its real
-		// parent product ID via $id_map, and set that parent's variation
-		// attribute (always "Dose" in this export) so WooCommerce actually
-		// offers the right set of options.
-		foreach ( $pending_variations as $original_parent_id => $rows ) {
-			$parent_id = $id_map[ (string) $original_parent_id ] ?? 0;
-			if ( ! $parent_id ) {
-				$results[] = [ 'ok' => false, 'msg' => "Variation rows referencing original ID {$original_parent_id} — parent product not found, skipped." ];
-				continue;
-			}
+		$job_id = wp_generate_uuid4();
+		$job    = [
+			'main_rows'      => $main_rows,
+			'variation_rows' => $variation_rows,
+			'id_map'         => [], // original CSV "ID" -> real WooCommerce product ID, filled in as main_rows are processed
+		];
+		set_transient( self::job_key( $job_id ), $job, HOUR_IN_SECONDS );
 
-			$parent = wc_get_product( $parent_id );
-			if ( ! $parent || ! $parent->is_type( 'variable' ) ) {
-				continue;
-			}
+		$total_steps = (int) ceil( count( $main_rows ) / self::MAIN_BATCH_SIZE )
+			+ (int) ceil( count( $variation_rows ) / self::VARIATION_BATCH_SIZE );
 
-			$doses = [];
-			foreach ( $rows as $row ) {
-				$doses[] = $get( $row, 'Attribute 1 value(s)' );
-			}
-			$doses = array_values( array_unique( array_filter( $doses ) ) );
+		wp_send_json_success( [ 'job_id' => $job_id, 'total' => max( $total_steps, 1 ) ] );
+	}
 
-			// A global (site-wide, taxonomy-backed) attribute would need its
-			// own registration step; a local (product-specific) attribute is
-			// exactly what this export's "Attribute 1 global" = 0 means, and
-			// is simpler to import reliably.
-			$attribute = new WC_Product_Attribute();
-			$attribute->set_id( 0 );
-			$attribute->set_name( 'Dose' );
-			$attribute->set_options( $doses );
-			$attribute->set_visible( true );
-			$attribute->set_variation( true );
-			$parent->set_attributes( [ $attribute ] );
-			$parent->save();
+	private static function row_to_assoc( array $row, array $col ): array {
+		$assoc = [];
+		foreach ( $col as $name => $index ) {
+			$assoc[ $name ] = isset( $row[ $index ] ) ? trim( (string) $row[ $index ] ) : '';
+		}
+		return $assoc;
+	}
 
-			foreach ( $rows as $row ) {
-				$dose = $get( $row, 'Attribute 1 value(s)' );
-				$price = $get( $row, 'Regular price' );
+	private static function job_key( string $job_id ): string {
+		return 'lpcm_import_job_' . $job_id;
+	}
 
-				$var_slug = sanitize_title( $get( $row, 'Name' ) );
-				$variation_id = self::find_variation_id( $parent_id, $dose );
-				$variation = $variation_id ? new WC_Product_Variation( $variation_id ) : new WC_Product_Variation();
-				$variation->set_parent_id( $parent_id );
-				$variation->set_attributes( [ 'dose' => $dose ] );
-				if ( $price !== '' ) {
-					$variation->set_regular_price( $price );
-				}
-				$variation->set_status( 'publish' );
-				$variation->set_manage_stock( false );
-				$variation->set_stock_status( 'instock' );
-				$variation->save();
-			}
+	// ---------------------------------------------------------------
+	// AJAX: step - process one small batch, save progress, return results
+	// ---------------------------------------------------------------
 
-			$results[] = [ 'ok' => true, 'msg' => $parent->get_name() . ' — ' . count( $rows ) . ' dose variation(s) attached.' ];
+	public static function ajax_step() {
+		check_ajax_referer( 'lpcm_run_import', 'nonce' );
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_send_json_error( [ 'message' => 'Insufficient permissions.' ], 403 );
 		}
 
-		return $results;
+		$job_id = isset( $_POST['job_id'] ) ? sanitize_text_field( wp_unslash( $_POST['job_id'] ) ) : '';
+		$job    = get_transient( self::job_key( $job_id ) );
+		if ( ! is_array( $job ) ) {
+			wp_send_json_error( [ 'message' => 'Import job expired or not found. Please re-upload the file.' ] );
+		}
+
+		$results = [];
+
+		if ( ! empty( $job['main_rows'] ) ) {
+			$batch = array_splice( $job['main_rows'], 0, self::MAIN_BATCH_SIZE );
+			foreach ( $batch as $row ) {
+				$results[] = self::import_main_row( $row, $job['id_map'] );
+			}
+		} elseif ( ! empty( $job['variation_rows'] ) ) {
+			$keys  = array_slice( array_keys( $job['variation_rows'] ), 0, self::VARIATION_BATCH_SIZE );
+			foreach ( $keys as $key ) {
+				$rows = $job['variation_rows'][ $key ];
+				unset( $job['variation_rows'][ $key ] );
+				$results[] = self::attach_variations( $key, $rows, $job['id_map'] );
+			}
+		}
+
+		$done = empty( $job['main_rows'] ) && empty( $job['variation_rows'] );
+
+		if ( $done ) {
+			delete_transient( self::job_key( $job_id ) );
+		} else {
+			set_transient( self::job_key( $job_id ), $job, HOUR_IN_SECONDS );
+		}
+
+		wp_send_json_success( [
+			'results' => array_filter( $results ),
+			'done'    => $done,
+		] );
+	}
+
+	/** Creates/updates one parent (variable or simple) product from a CSV row. Returns a { ok, msg } result row. */
+	private static function import_main_row( array $assoc, array &$id_map ): array {
+		$type = $assoc['Type'];
+		$name = $assoc['Name'];
+
+		try {
+			[ $base_name, $pack_size ] = self::split_kit_name( $name );
+			$category = self::category_for( $base_name );
+
+			$slug        = sanitize_title( $name );
+			$existing_id = self::find_product_id_by_slug( $slug );
+			$product     = $existing_id
+				? wc_get_product( $existing_id )
+				: ( $type === 'variable' ? new WC_Product_Variable() : new WC_Product_Simple() );
+
+			$product->set_name( $name );
+			$product->set_slug( $slug );
+			$product->set_status( 'publish' );
+			$product->set_catalog_visibility( 'visible' );
+			$product->set_description( wp_kses_post( $assoc['Description'] ?? '' ) );
+			$product->set_short_description( wp_kses_post( $assoc['Short description'] ?? '' ) );
+			$product->set_reviews_allowed( true );
+
+			if ( $type === 'simple' ) {
+				$price = $assoc['Regular price'] ?? '';
+				if ( $price !== '' ) {
+					$product->set_regular_price( $price );
+				}
+				$product->set_manage_stock( false );
+				$product->set_stock_status( 'instock' );
+			}
+
+			self::assign_category( $product, $category );
+
+			$product_id = $product->save();
+			update_post_meta( $product_id, '_lpcm_pack_size', $pack_size );
+
+			$original_id = $assoc['ID'] ?? '';
+			if ( $original_id !== '' ) {
+				$id_map[ $original_id ] = $product_id;
+			}
+
+			$image_url = $assoc['Images'] ?? '';
+			if ( $image_url ) {
+				$outcome = self::sideload_and_set_thumbnail( $product_id, $image_url );
+				if ( is_wp_error( $outcome ) ) {
+					return [ 'ok' => false, 'msg' => "{$name} — created (ID {$product_id}), but image failed: {$outcome->get_error_message()}" ];
+				}
+				return [ 'ok' => true, 'msg' => "{$name} — {$type}, category \"{$category}\", pack size {$pack_size}, image set." ];
+			}
+			return [ 'ok' => true, 'msg' => "{$name} — {$type}, category \"{$category}\", pack size {$pack_size}, no image in file." ];
+		} catch ( Exception $e ) {
+			return [ 'ok' => false, 'msg' => "{$name} — failed: {$e->getMessage()}" ];
+		}
+	}
+
+	/** Attaches every collected dose-variation row to its real parent product ID. Returns a { ok, msg } result row. */
+	private static function attach_variations( string $original_parent_id, array $rows, array $id_map ): array {
+		$parent_id = $id_map[ $original_parent_id ] ?? 0;
+		if ( ! $parent_id ) {
+			return [ 'ok' => false, 'msg' => "Variation rows referencing original ID {$original_parent_id} — parent product not found, skipped." ];
+		}
+
+		$parent = wc_get_product( $parent_id );
+		if ( ! $parent || ! $parent->is_type( 'variable' ) ) {
+			return [ 'ok' => false, 'msg' => "Original ID {$original_parent_id} — parent is not a variable product, skipped." ];
+		}
+
+		$doses = [];
+		foreach ( $rows as $row ) {
+			$doses[] = $row['Attribute 1 value(s)'] ?? '';
+		}
+		$doses = array_values( array_unique( array_filter( $doses ) ) );
+
+		// A local (product-specific) attribute, not a global taxonomy-backed
+		// one, matching this export's "Attribute 1 global" = 0.
+		$attribute = new WC_Product_Attribute();
+		$attribute->set_id( 0 );
+		$attribute->set_name( 'Dose' );
+		$attribute->set_options( $doses );
+		$attribute->set_visible( true );
+		$attribute->set_variation( true );
+		$parent->set_attributes( [ $attribute ] );
+		$parent->save();
+
+		foreach ( $rows as $row ) {
+			$dose  = $row['Attribute 1 value(s)'] ?? '';
+			$price = $row['Regular price'] ?? '';
+
+			$variation_id = self::find_variation_id( $parent_id, $dose );
+			$variation    = $variation_id ? new WC_Product_Variation( $variation_id ) : new WC_Product_Variation();
+			$variation->set_parent_id( $parent_id );
+			$variation->set_attributes( [ 'dose' => $dose ] );
+			if ( $price !== '' ) {
+				$variation->set_regular_price( $price );
+			}
+			$variation->set_status( 'publish' );
+			$variation->set_manage_stock( false );
+			$variation->set_stock_status( 'instock' );
+			$variation->save();
+		}
+
+		return [ 'ok' => true, 'msg' => $parent->get_name() . ' — ' . count( $rows ) . ' dose variation(s) attached.' ];
 	}
 
 	private static function find_product_id_by_slug( string $slug ): int {
