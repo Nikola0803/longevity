@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 import Image from "@/components/Image";
 import Header from "@/components/Header";
 import PromoBanner from "@/components/PromoBanner";
-import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
 import CoaModal from "@/components/CoaModal";
 import { useCart } from "@/lib/cart-context";

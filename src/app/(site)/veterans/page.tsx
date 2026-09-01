@@ -18,7 +18,7 @@ const STEPS = [
   {
     n: "02",
     title: "Verify service",
-    body: "Send a photo of a service or agency ID, DD-214, or other reasonable proof of service or duty. We review by hand, no third-party verification service, no stored documents beyond confirming eligibility.",
+    body: "Send a photo of a service or agency ID, discharge paperwork, or other reasonable proof of service or duty. We review by hand, no third-party verification service, no stored documents beyond confirming eligibility.",
   },
   {
     n: "03",

@@ -8,7 +8,7 @@ const BENEFITS = [
   { icon: "ri-dashboard-line", title: "Affiliate Dashboard", body: "Track clicks, conversions, and earnings in real time through your dedicated affiliate portal." },
   { icon: "ri-gift-line", title: "Personal Discount", body: "Affiliates receive a personal discount code for their own research procurement in addition to commission earnings." },
   { icon: "ri-time-line", title: "30-Day Cookie Window", body: "Referral attribution is tracked for 30 days from the initial click. Not just the first session." },
-  { icon: "ri-secure-payment-line", title: "Monthly Payouts", body: "Earnings are paid out monthly via Zelle, Venmo, or Cash App once your confirmed balance reaches the $25 minimum." },
+  { icon: "ri-secure-payment-line", title: "Monthly Payouts", body: "Earnings are paid out monthly by bank transfer once your confirmed balance reaches the $25 minimum." },
   { icon: "ri-community-line", title: "Priority Support", body: "Lab affiliates get dedicated priority support for their own orders and a direct contact line to the team." },
 ];
 

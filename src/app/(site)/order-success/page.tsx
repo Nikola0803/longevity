@@ -1,7 +1,6 @@
 import { Link, useSearchParams } from "react-router-dom";
 import Header from "@/components/Header";
 import PromoBanner from "@/components/PromoBanner";
-import Footer from "@/components/Footer";
 
 /**
  * Landing page after a NiftiPay checkout — the plugin's build_return_url()
@@ -48,7 +47,6 @@ export default function OrderSuccessPage() {
           </Link>
         </section>
       </main>
-      <Footer />
     </div>
   );
 }
