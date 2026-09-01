@@ -32,7 +32,7 @@ export function LegalHero({
           <h1 className="font-display uppercase leading-[0.9] tracking-tightest text-[clamp(34px,5vw,60px)]">
             <span className="text-foreground-100">{line1}</span>
             <br />
-            <span className="text-transparent [-webkit-text-stroke:1.5px_rgb(var(--primary-500) / 0.55)]">
+            <span className="text-transparent [-webkit-text-stroke:1.5px_rgb(var(--primary-500)_/_0.55)]">
               {line2}
             </span>
           </h1>

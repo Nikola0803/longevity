@@ -20,7 +20,6 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import PromoBanner from "@/components/PromoBanner";
-import Footer from "@/components/Footer";
 import {
   getStoredToken,
   getStoredUser,
@@ -311,7 +310,6 @@ export default function AccountPage() {
           )}
         </section>
       </main>
-      <Footer />
     </div>
   );
 }

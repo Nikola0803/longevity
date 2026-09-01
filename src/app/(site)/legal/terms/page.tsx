@@ -76,7 +76,7 @@ export default function TermsPage() {
       <LegalSection n={4} title="Orders & Payment">
         <p>
           All orders are subject to acceptance and availability. We reserve the right to
-          refuse or cancel any order at our discretion. Prices are listed in USD and are
+          refuse or cancel any order at our discretion. Prices are listed in AUD and are
           subject to change without notice. Payment is due at the time of purchase. We
           accept the payment methods listed at checkout. You are responsible for all
           applicable taxes.

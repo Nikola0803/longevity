@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import PromoBanner from "@/components/PromoBanner";
-import Footer from "@/components/Footer";
 import FaqAccordion from "@/components/FaqAccordion";
 import CoaLookup from "@/components/CoaLookup";
 import HeroSection from "@/components/HeroSection";
