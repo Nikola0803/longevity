@@ -29,6 +29,13 @@ export interface Product {
   /** Most recent real lab CoaDocument for this product, if one has been uploaded. */
   coaUrl?: string;
   coaBatchLabel?: string;
+  /** Numeric WooCommerce product id (and variation id, for dose variants) —
+   * required to add this item to a real WooCommerce Store API cart at
+   * checkout. Absent for fallback-catalog products (no live Woo product
+   * behind them), which is exactly why checkout requires Woo to be
+   * configured — see src/lib/woo-store-api.ts. */
+  wooProductId?: number;
+  wooVariationId?: number;
 }
 
 const IN_STOCK = "text-secondary-500 shadow-[0_0_5px_1px_currentColor]";

@@ -30,6 +30,9 @@ class WC_Gateway_Niftipay extends WC_Payment_Gateway {
 	/** @var string */
 	public $api_base_url;
 
+	/** @var string */
+	public $storefront_url;
+
 	public function __construct() {
 		$this->id                 = 'niftipay';
 		$this->icon               = '';
@@ -48,6 +51,7 @@ class WC_Gateway_Niftipay extends WC_Payment_Gateway {
 		$this->api_key         = $this->get_option('api_key');
 		$this->integration_id  = $this->get_option('integration_id');
 		$this->api_base_url    = $this->get_option('api_base_url', 'https://www.niftipay.com');
+		$this->storefront_url  = untrailingslashit($this->get_option('storefront_url', ''));
 
 		add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
 		add_action('woocommerce_receipt_' . $this->id, array($this, 'receipt_page'));
@@ -98,6 +102,13 @@ class WC_Gateway_Niftipay extends WC_Payment_Gateway {
 				'type'        => 'text',
 				'description' => __('Only change this if NiftiPay gives you a different environment URL.', 'niftipay-woocommerce'),
 				'default'     => 'https://www.niftipay.com',
+			),
+			'storefront_url' => array(
+				'title'       => __('Headless Storefront URL', 'niftipay-woocommerce'),
+				'type'        => 'text',
+				'description' => __('The Next.js storefront\'s own domain, e.g. https://longevitypeptides.com — set this so customers land back on YOUR site (order-success / checkout pages) after paying, instead of WooCommerce\'s own pages on the WordPress domain. Leave blank to use WooCommerce\'s default order-received/checkout pages.', 'niftipay-woocommerce'),
+				'default'     => '',
+				'placeholder' => 'https://longevitypeptides.com',
 			),
 			'webhook_url' => array(
 				'title'       => __('Webhook URL (read-only)', 'niftipay-woocommerce'),
@@ -160,6 +171,33 @@ class WC_Gateway_Niftipay extends WC_Payment_Gateway {
 	}
 
 	/**
+	 * Where the customer lands after a successful payment. If a headless
+	 * storefront URL is configured, send them back to OUR site (not the
+	 * WordPress domain) with enough info to look the order up — otherwise
+	 * fall back to WooCommerce's own order-received page.
+	 */
+	private function build_return_url($order) {
+		if (!$this->storefront_url) {
+			return $this->get_return_url($order);
+		}
+		return add_query_arg(
+			array(
+				'order'     => $order->get_id(),
+				'order_key' => $order->get_order_key(),
+			),
+			$this->storefront_url . '/order-success'
+		);
+	}
+
+	/** Where the customer lands after a failed/cancelled payment. */
+	private function build_failure_url() {
+		if (!$this->storefront_url) {
+			return wc_get_checkout_url();
+		}
+		return $this->storefront_url . '/checkout?payment=failed';
+	}
+
+	/**
 	 * WooCommerce stores money as a decimal string; NiftiPay's fiat orders
 	 * API wants integer minor units (cents). Two-decimal currencies only
 	 * here — extend this if you sell in a 0- or 3-decimal currency (see
@@ -209,8 +247,8 @@ class WC_Gateway_Niftipay extends WC_Payment_Gateway {
 			'description'     => sprintf(__('Order #%s', 'niftipay-woocommerce'), $order->get_order_number()),
 			'reference'       => $reference,
 			'email'           => $order->get_billing_email(),
-			'returnUrl'       => $this->get_return_url($order),
-			'failureUrl'      => wc_get_checkout_url(),
+			'returnUrl'       => $this->build_return_url($order),
+			'failureUrl'      => $this->build_failure_url(),
 		));
 
 		if (!$response['ok'] || empty($response['data']['payUrl'])) {

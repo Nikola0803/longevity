@@ -102,6 +102,7 @@ function adaptWooProduct(p: WooProduct, variations: WooVariation[]): Product[] {
         statusLabel: inStock ? "In Stock" : "Backordered",
         disabled: !inStock,
         buttonText: inStock ? "Add to Cart" : "Unavailable",
+        wooProductId: p.id,
       },
     ];
   }
@@ -133,6 +134,8 @@ function adaptWooProduct(p: WooProduct, variations: WooVariation[]): Product[] {
       statusLabel: inStock ? "In Stock" : "Backordered",
       disabled: !inStock,
       buttonText: inStock ? "Add to Cart" : "Unavailable",
+      wooProductId: p.id,
+      wooVariationId: v.id,
     };
   });
 }

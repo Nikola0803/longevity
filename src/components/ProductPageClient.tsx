@@ -57,6 +57,8 @@ export default function ProductPageClient({ slug }: { slug: string }) {
       spec: product.spec,
       price: product.price,
       image: product.image,
+      wooProductId: product.wooProductId,
+      wooVariationId: product.wooVariationId,
     });
   };
 

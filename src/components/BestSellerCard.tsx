@@ -170,6 +170,8 @@ export default function BestSellerCard({
               spec: selected.spec,
               price: selected.price,
               image: selected.image,
+              wooProductId: selected.wooProductId,
+              wooVariationId: selected.wooVariationId,
             });
           }}
           className="w-full h-10 rounded-lg text-[12px] font-medium transition-all duration-500 ease-precision flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer bg-background-100 text-foreground-300 hover:bg-primary-500 hover:text-background-900 hover:shadow-[0_0_20px_-4px_rgb(var(--primary-500) / 0.4)]"

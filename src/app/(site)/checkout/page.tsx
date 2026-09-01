@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
 import PromoBanner from "@/components/PromoBanner";
 import CheckoutSummary from "@/components/CheckoutSummary";
@@ -17,7 +16,6 @@ const COUNTRIES = [
 const AU_STATES = ["NSW", "VIC", "QLD", "WA", "SA", "TAS", "ACT", "NT"];
 
 export default function CheckoutPage() {
-  const router = useRouter();
   const { items, clearCart, subtotal } = useCart();
 
   // Shipping fields
@@ -36,13 +34,6 @@ export default function CheckoutPage() {
   const [shippingRates, setShippingRates] = useState<ShippingRates>(DEFAULT_SHIPPING_RATES);
   const [shippingMethod, setShippingMethod] = useState<"standard" | "expedited" | "overnight" | "international">("standard");
 
-  // Card fields — UI only for now (see src/app/api/store/checkout/route.ts,
-  // not yet wired to a real payment processor).
-  const [cardName, setCardName] = useState("");
-  const [cardNumber, setCardNumber] = useState("");
-  const [cardExpiry, setCardExpiry] = useState("");
-  const [cardCvc, setCardCvc] = useState("");
-
   useEffect(() => {
     fetch("/api/store/shipping-rates")
       .then((r) => r.json())
@@ -57,10 +48,6 @@ export default function CheckoutPage() {
     firstName.trim() && lastName.trim() && email.trim() && phone.trim() &&
     address1.trim() && city.trim() && (!stateRequired || stateCode) && postcode.trim()
   );
-  const cardComplete = Boolean(
-    cardName.trim() && cardNumber.replace(/\s/g, "").length >= 15 && cardExpiry.trim() && cardCvc.trim()
-  );
-
   const subtotalCents = Math.round(subtotal * 100);
   const shipOptions = shippingOptions(subtotalCents, shippingRates, country);
   const selectedShippingCents = shipOptions.find((o) => o.id === shippingMethod)?.cents ?? shipOptions[0]?.cents ?? 0;
@@ -74,26 +61,27 @@ export default function CheckoutPage() {
 
   const handlePlaceOrder = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (items.length === 0 || !shippingComplete || !cardComplete || placing) return;
+    if (items.length === 0 || !shippingComplete || placing) return;
     setOrderError("");
     setPlacing(true);
 
     try {
-      const res = await fetch("/api/store/checkout", {
+      const res = await fetch("/api/store/woo-checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          items: items.map((item) => ({ slug: item.slug, quantity: item.qty })),
-          paymentMethod: "card",
-          shippingMethod,
+          items: items.map((item) => ({
+            wooProductId: item.wooProductId,
+            wooVariationId: item.wooVariationId,
+            qty: item.qty,
+          })),
           customerNote: orderNotes.trim() || undefined,
-          affiliateRef: getReferralCode() ?? undefined,
           billing: {
-            firstName: firstName.trim(),
-            lastName: lastName.trim(),
+            first_name: firstName.trim(),
+            last_name: lastName.trim(),
             email: email.trim(),
             phone: phone.trim(),
-            address1: address1.trim(),
+            address_1: address1.trim(),
             city: city.trim(),
             state: stateCode,
             postcode: postcode.trim(),
@@ -101,18 +89,15 @@ export default function CheckoutPage() {
           },
         }),
       });
-      const order = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        throw new Error(order?.error || "Something went wrong placing your order. Please try again.");
+      const result = await res.json().catch(() => ({}));
+      if (!res.ok || !result.redirectUrl) {
+        throw new Error(result?.error || "Something went wrong placing your order. Please try again.");
       }
 
       clearCart();
-
-      const params = new URLSearchParams({
-        order: order.number || String(order.id),
-        gateway: "card",
-      });
-      router.push(`/order-success?${params.toString()}`);
+      // NiftiPay's hosted payment page is off-domain — a real navigation,
+      // not a client-side route.
+      window.location.href = result.redirectUrl;
     } catch (err) {
       setOrderError(
         err instanceof Error ? err.message : "Something went wrong placing your order. Please try again."
@@ -310,7 +295,7 @@ export default function CheckoutPage() {
                 <h2 className="font-display text-[20px] text-foreground-100">Payment Method</h2>
               </div>
               <form className="space-y-6" onSubmit={handlePlaceOrder}>
-                <div className="rounded-lg border border-primary-500/25 bg-primary-500/[0.04] p-4 space-y-4">
+                <div className="rounded-lg border border-primary-500/25 bg-primary-500/[0.04] p-4 space-y-3">
                   <div className="flex items-center gap-2">
                     <i className="ri-bank-card-line text-[16px] text-primary-500"></i>
                     <span className="text-[13px] font-medium text-foreground-200">Credit / Debit Card</span>
@@ -319,27 +304,12 @@ export default function CheckoutPage() {
                       <i className="ri-mastercard-line text-[18px]"></i>
                     </span>
                   </div>
-                  <div>
-                    <label className="block text-[12px] font-medium text-foreground-300 mb-1.5">Name on Card <span className="text-signal">*</span></label>
-                    <input placeholder="John Doe" value={cardName} onChange={(e) => setCardName(e.target.value)} className="w-full h-10 px-3 rounded-md bg-background-100 border text-foreground-100 text-sm placeholder:text-foreground-600 focus:outline-none focus:ring-1 transition border-background-200 focus:border-primary-500 focus:ring-primary-500/40" type="text" />
-                  </div>
-                  <div>
-                    <label className="block text-[12px] font-medium text-foreground-300 mb-1.5">Card Number <span className="text-signal">*</span></label>
-                    <input placeholder="1234 5678 9012 3456" value={cardNumber} onChange={(e) => setCardNumber(e.target.value)} className="w-full h-10 px-3 rounded-md bg-background-100 border text-foreground-100 text-sm placeholder:text-foreground-600 focus:outline-none focus:ring-1 transition border-background-200 focus:border-primary-500 focus:ring-primary-500/40 font-mono" type="text" inputMode="numeric" maxLength={19} />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-[12px] font-medium text-foreground-300 mb-1.5">Expiry <span className="text-signal">*</span></label>
-                      <input placeholder="MM/YY" value={cardExpiry} onChange={(e) => setCardExpiry(e.target.value)} className="w-full h-10 px-3 rounded-md bg-background-100 border text-foreground-100 text-sm placeholder:text-foreground-600 focus:outline-none focus:ring-1 transition border-background-200 focus:border-primary-500 focus:ring-primary-500/40 font-mono" type="text" maxLength={5} />
-                    </div>
-                    <div>
-                      <label className="block text-[12px] font-medium text-foreground-300 mb-1.5">CVC <span className="text-signal">*</span></label>
-                      <input placeholder="123" value={cardCvc} onChange={(e) => setCardCvc(e.target.value)} className="w-full h-10 px-3 rounded-md bg-background-100 border text-foreground-100 text-sm placeholder:text-foreground-600 focus:outline-none focus:ring-1 transition border-background-200 focus:border-primary-500 focus:ring-primary-500/40 font-mono" type="text" inputMode="numeric" maxLength={4} />
-                    </div>
-                  </div>
+                  <p className="text-[12px] text-foreground-500 leading-relaxed">
+                    You&apos;ll enter your card details on our secure payment partner&apos;s page after confirming this order — nothing is collected here.
+                  </p>
                   <p className="text-[11px] text-foreground-500 leading-relaxed flex items-start gap-1.5">
                     <i className="ri-lock-line text-[12px] mt-0.5 shrink-0"></i>
-                    Payments are processed securely. Your card details are never stored on our servers.
+                    Payments are processed securely by NiftiPay. Your card details are never stored on our servers.
                   </p>
                 </div>
 
@@ -370,7 +340,7 @@ export default function CheckoutPage() {
 
                 <button
                   type="submit"
-                  disabled={items.length === 0 || !shippingComplete || !cardComplete || placing}
+                  disabled={items.length === 0 || !shippingComplete || placing}
                   className="w-full h-12 rounded-md bg-primary-500 text-background-900 text-[13px] font-semibold hover:bg-primary-400 transition-all duration-300 ease-precision hover:shadow-[0_0_24px_-4px_rgb(var(--primary-500) / 0.6)] flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-none"
                 >
                   {placing ? (

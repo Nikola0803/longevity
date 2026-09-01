@@ -4,12 +4,12 @@ import PromoBanner from "@/components/PromoBanner";
 import Footer from "@/components/Footer";
 
 /**
- * Was fully static before (hardcoded "pay via Zelle to orders@..." no matter
- * which gateway the customer actually picked at checkout, no order number,
- * and a "Back to Catalog" button with no href at all). Checkout now passes
- * the real order number / selected gateway / handle / memo through as query
- * params on redirect — this page reads them back via the (Next 15, async)
- * searchParams prop instead of guessing.
+ * Landing page after a NiftiPay checkout — the plugin's build_return_url()
+ * sends the customer here (?order=<wc order id>&order_key=<wc order key>)
+ * once they've paid on NiftiPay's hosted page. This redirect is UI-only:
+ * the order's real status was already set by NiftiPay's webhook hitting
+ * WordPress directly, not by the customer arriving here, so this page just
+ * displays the order reference — it never marks anything paid itself.
  */
 export default async function OrderSuccessPage({
   searchParams,
@@ -18,9 +18,6 @@ export default async function OrderSuccessPage({
 }) {
   const params = await searchParams;
   const orderNumber = typeof params.order === "string" ? params.order : "";
-  const gatewayLabel = typeof params.label === "string" ? params.label : "your selected method";
-  const handle = typeof params.handle === "string" ? params.handle : "";
-  const memo = typeof params.memo === "string" ? params.memo : "";
 
   return (
     <div className="min-h-screen bg-background-800 text-foreground-100">
@@ -31,7 +28,7 @@ export default async function OrderSuccessPage({
           <div className="w-20 h-20 flex items-center justify-center rounded-full bg-secondary-500/10 border border-secondary-500/30 mb-6">
             <i className="ri-check-line text-[32px] text-secondary-500"></i>
           </div>
-          <h2 className="font-display text-[28px] text-foreground-100 mb-3">Order Submitted</h2>
+          <h2 className="font-display text-[28px] text-foreground-100 mb-3">Thank you for your order</h2>
 
           {orderNumber && (
             <p className="font-mono text-[13px] tracking-[0.1em] text-primary-500 mb-4">
@@ -40,22 +37,7 @@ export default async function OrderSuccessPage({
           )}
 
           <p className="text-[14px] text-foreground-500 max-w-md mb-4">
-            Your order has been received. Please complete payment via{" "}
-            <strong className="text-foreground-200">{gatewayLabel}</strong>
-            {handle ? (
-              <>
-                {" "}to <span className="font-mono text-primary-500">{handle}</span>
-              </>
-            ) : (
-              " using the details we email you"
-            )}
-            {memo ? (
-              <>
-                {" "}and include the code <span className="font-mono text-primary-500">{memo}</span> in your payment notes for faster verification.
-              </>
-            ) : (
-              "."
-            )}
+            Your payment has been received and your order is being processed. A confirmation email is on its way.
           </p>
 
           <p className="text-[12px] text-foreground-600 mb-8">
