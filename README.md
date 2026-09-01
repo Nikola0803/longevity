@@ -8,8 +8,9 @@ NiftiPay for payment processing. Ships to Australia and New Zealand only.
 
 - **`/src`** — React 18 + TypeScript + Tailwind, routed with
   `react-router-dom`. No server component of its own — every page fetches
-  data directly from the browser (WooCommerce's public Store API, and the
-  two WordPress plugins below), same as any client-rendered SPA.
+  data directly from the browser (the plugins' own REST routes for
+  catalog/CMS/COAs, WooCommerce's Store API for checkout), same as any
+  client-rendered SPA.
 - **`/wordpress-plugin/longevity-content-manager`** — editable site copy
   (CMS), headless account auth, guest-order linking, marketing, and
   WooCommerce product-data tools, plus the optional built-in SPA
@@ -75,10 +76,12 @@ and CORS work:
 There's no backend of this app's own to hide anything behind — every
 request goes straight from the browser to WordPress:
 
-- **Catalog**: WooCommerce's public Store API
-  (`/wp-json/wc/store/v1/products`) — no auth needed, same endpoint a
-  shopper's browser would hit loading any WooCommerce shop page.
-- **Checkout**: also the Store API (`/cart`, `/cart/add-item`,
+- **Catalog**: the `longevity-content-manager` plugin's own
+  `/wp-json/longevity/v1/catalog` endpoint (public, no auth) — built
+  directly off WooCommerce's PHP product objects on the server
+  (`class-catalog-api.php`), not the Store API, so it can guarantee full
+  dose + pack-size variation data in the exact shape the frontend expects.
+- **Checkout**: the Store API (`/cart`, `/cart/add-item`,
   `/checkout`), the same one WooCommerce Blocks' own checkout uses
   internally — it runs the real checkout pipeline and calls the NiftiPay
   gateway's `process_payment()`, returning NiftiPay's hosted payment URL
@@ -89,15 +92,21 @@ request goes straight from the browser to WordPress:
 - **CMS content, COAs**: the two custom plugins' own REST routes under
   `/wp-json/longevity/v1/*`.
 
+## Importing your product catalog
+
+Don't use wp-admin's own **Products → Import** for a real catalog-sized
+CSV — it downloads every product image synchronously per row and routinely
+times out on shared hosting. Use **Longevity Peptides Content Manager →
+Import Products** instead (in the `longevity-content-manager` plugin): it
+writes products directly through WooCommerce's PHP API, maps categories
+into this site's own taxonomy automatically, and tags any product named
+`<Compound> Kit` as a 10-vial pack (`_lpcm_pack_size` = 10) with zero extra
+steps — the exact signal `getAllCatalogProducts()` needs to show the
+single-vial/10-pack selector on a real product. Safe to re-run against the
+same file; products are matched and updated by slug, never duplicated.
+
 ## Known gaps
 
-- **Live-Woo variation splitting**: dose/pack-size splitting (single vial
-  vs 10-pack kit) is fully built and demonstrated against the static
-  fallback catalog. For a *live* WooCommerce catalog, Store API's
-  product-list endpoint doesn't reliably expose a variable product's
-  per-variation breakdown the same way the old wc/v3 REST API did — this
-  needs verifying against a real store before variable products come
-  through as anything but simple products.
 - **NiftiPay webhook signature verification** is a stub in the plugin
   (`class-niftipay-webhook.php`) pending confirmation of NiftiPay's exact
   HMAC scheme.

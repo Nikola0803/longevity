@@ -2,11 +2,11 @@
 Contributors: longevitytechlab
 Requires at least: 6.0
 Requires PHP: 8.0
-Version: 2.2.0
+Version: 2.3.0
 License: GPLv2 or later
 
 Headless CMS, auth, marketing and product-data tools for the Longevity
-Peptides storefront - a Next.js app hosted separately (e.g. Vercel), not
+Peptides storefront - a Vite/React app hosted separately (e.g. Vercel), not
 served by this plugin, talking to this WordPress/WooCommerce install
 purely over REST.
 
@@ -26,7 +26,7 @@ editorial copy and admin conveniences that have no other home.
 **Longevity Peptides Content Manager → Content (CMS)** — edits the hero
 text, About/FAQ/Contact/Shop/COA page copy, testimonials, footer links,
 and legal page bodies shown across the site, and exposes it over REST at
-`/wp-json/longevity/v1/cms` (and `/cms/{page}`) for the Next.js frontend
+`/wp-json/longevity/v1/cms` (and `/cms/{page}`) for the frontend
 to read. Full field-by-field contract in `CMS_CONTENT_MODEL.md`.
 
 The shipped defaults are written for Longevity Peptides' actual AU/NZ
@@ -57,6 +57,43 @@ opts in at account creation.
 the free-shipping cart threshold, read by the frontend at
 `/wp-json/longevity/v1/settings`.
 
+== Import Products (CSV) ==
+
+**Longevity Peptides Content Manager → Import Products** - a real, direct
+importer for a standard WooCommerce product-export CSV (variable/simple/
+variation rows, `Parent` column with `id:<row id>` references) that writes
+products straight through WooCommerce's PHP API instead of the slow,
+timeout-prone browser-driven **Products → Import** screen built into
+WooCommerce itself (which downloads every image synchronously per row and
+routinely times out on shared hosting for anything more than a handful of
+products).
+
+It also does two things wp-admin's own importer doesn't:
+- **Maps every product into this site's own category taxonomy** (Fat Loss
+  & Metabolic, Recovery & Repair, Longevity, Cognitive, Peptides, Peptide
+  Blends, Research Supplies - the same categories the storefront's shop
+  page filters by), by compound name, instead of trusting whatever
+  category tags the export file happened to carry.
+- **Tags 10-vial bulk kits automatically.** Any product named
+  `<Compound> Kit` is recognized as a 10-vial pack (`_lpcm_pack_size`
+  postmeta = 10; a normal product defaults to 1) with zero manual setup -
+  see `class-catalog-api.php` below for how that meta turns into the
+  storefront's pack-size selector.
+
+Safe to re-run: products are matched by slug and updated in place, not
+duplicated. A failed image download is reported per-product but never
+aborts the rest of the batch.
+
+== Catalog API ==
+
+`GET /wp-json/longevity/v1/catalog` - public, read-only, the storefront's
+actual product-list source (see `src/lib/storefront-catalog.ts` in the
+frontend repo). Built directly from WooCommerce's PHP product objects
+(`wc_get_products()`, variation children, category terms, `_lpcm_pack_size`
+meta) rather than the WooCommerce Store API, so it can guarantee the exact
+field shape the frontend's `Product` type expects - dose and pack-size
+variation data included - in one call.
+
 == Product tools ==
 
 **Longevity Peptides Content Manager → Product Tools** carries three
@@ -75,7 +112,7 @@ This plugin also carries an inactive-by-default static-file router and
 zip-upload admin page (**Longevity Peptides Content Manager** top-level
 menu) that can serve a built Vite/CRA `dist/` folder directly from this
 WordPress install, with an explicit "SPA takeover" on/off switch. It is
-**not used** by the current Next.js deployment (which is hosted on its
+**not used** by the current Vite/React deployment (which is hosted on its
 own domain and never needs WordPress to serve its frontend) - it only
 matters if this WordPress install ever needs to serve the storefront
 itself instead. Takeover stays off until explicitly enabled, so its
