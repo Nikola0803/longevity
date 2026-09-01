@@ -1,11 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-
-// HeroVial3D (react-three-fiber) previously rendered here; both themes now
-// use a full-bleed background video instead. Left the component file in
-// place in case we revert.
 
 const TEAL   = "rgb(var(--primary-500))";
 const TEAL_D = "rgb(var(--hero-dim))";
@@ -13,75 +8,11 @@ const TEAL_L = "rgb(var(--hero-emphasis))";
 const BG     = "rgb(var(--bg-900))";
 const FG_DIM = "rgb(var(--fg-100) / 0.48)";
 
+// A real longevity-peps product photo, not video/animation — no Vertalis
+// footage or particle-canvas effect.
+const HERO_IMAGE = "https://longevitytech-lab.store/__l5e/assets-v1/65c3b5d2-d359-4179-b379-666cae6b7a4e/main-cover.png";
+
 export default function HeroSection() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  // This app has one theme (light) — no [data-theme] switch exists anymore,
-  // so this is no longer a runtime toggle, just a constant selecting the
-  // light-mode video/gradient branch below.
-  const isLight = true;
-  const [isUltrawide, setIsUltrawide] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-
-  // Ultrawide monitors (21:9, 32:9) get a clip shot with far more empty
-  // space around the vial so it doesn't crop or upscale-blur the way a
-  // 16:9 clip does when stretched that wide. Matched on aspect ratio, not
-  // raw width, so a large 16:9 4K display doesn't false-positive.
-  useEffect(() => {
-    const mql = window.matchMedia("(min-aspect-ratio: 2/1)");
-    const read = () => setIsUltrawide(mql.matches);
-    read();
-    mql.addEventListener("change", read);
-    return () => mql.removeEventListener("change", read);
-  }, []);
-
-  // Mobile gets its own portrait-composed clip (vial framed lower-center,
-  // clear of the heading/badges above it) instead of the desktop
-  // landscape clip letterboxed down, which crops the vial out of frame.
-  useEffect(() => {
-    const mql = window.matchMedia("(max-width: 767px)");
-    const read = () => setIsMobile(mql.matches);
-    read();
-    mql.addEventListener("change", read);
-    return () => mql.removeEventListener("change", read);
-  }, []);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    let animId: number;
-    const resize = () => { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; };
-    resize();
-    window.addEventListener("resize", resize);
-
-    const particles = Array.from({ length: 55 }, () => ({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      r: Math.random() * 1.2 + 0.2,
-      vx: (Math.random() - 0.5) * 0.16,
-      vy: (Math.random() - 0.5) * 0.16,
-      alpha: Math.random() * 0.09 + 0.02,
-    }));
-
-    const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      for (const p of particles) {
-        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.globalAlpha = p.alpha; ctx.fillStyle = TEAL; ctx.fill();
-        p.x += p.vx; p.y += p.vy;
-        if (p.x < 0) p.x = canvas.width;
-        if (p.x > canvas.width) p.x = 0;
-        if (p.y < 0) p.y = canvas.height;
-        if (p.y > canvas.height) p.y = 0;
-      }
-      ctx.globalAlpha = 1;
-      animId = requestAnimationFrame(draw);
-    };
-    draw();
-    return () => { cancelAnimationFrame(animId); window.removeEventListener("resize", resize); };
-  }, []);
-
   return (
     <section
       className="relative w-full overflow-hidden"
@@ -89,56 +20,15 @@ export default function HeroSection() {
         height: "calc(100vh - 72px)",
         minHeight: 560,
         maxHeight: 880,
-        // Light theme's page background is a flat solid, but the video's
-        // own studio backdrop has a vertical light/shadow falloff (light
-        // top, darker mid, lighter bottom). Matching that same falloff on
-        // the section itself means the video's edge dissolves into the
-        // page instead of sitting on top of a visibly flatter color.
-        // The banded gradient only reads correctly when the video already
-        // fills nearly the full frame (true ultrawide, object-contain).
-        // At standard widths the video uses object-cover instead (fills
-        // completely, no exposed background at all), so a flat color is
-        // correct there — the gradient would just show as a visible seam
-        // wherever the video doesn't reach.
-        background: isLight && isUltrawide
-          ? "linear-gradient(to bottom, #E6E7E9 0%, #DCDFE2 35%, #A8ADB3 55%, #5A5E64 68%, #8E939A 82%, #C5C9CE 100%)"
-          : BG,
+        background: BG,
       }}
     >
-      {/* Background vial video · full-bleed, sits under the same
-          grid/gradient/particle treatment so the vial reads as part of the
-          scene rather than a separate inserted clip. Dark and white themes
-          each get their own take (test: dark clip is new, may get swapped
-          back to HeroVial3D if it doesn't hold up). */}
-      <video
-        key={`${isLight ? "light" : "dark"}-${isMobile ? "mobile" : isUltrawide ? "uw" : "std"}`}
-        className={`absolute inset-0 z-0 w-full h-full pointer-events-none ${isUltrawide && !isMobile ? "object-contain" : "object-cover"}`}
-        style={{
-          objectPosition: isMobile ? "center center" : "right center",
-          // On ultrawide the video is letterboxed (object-contain) so it
-          // doesn't upscale-blur, and its own left edge needs a mask to
-          // dissolve into the page. At standard widths it's object-cover
-          // instead — it fills the section completely, so there's no
-          // exposed edge to mask; the overlay gradient below handles
-          // keeping the text side readable on its own.
-          ...(isUltrawide && !isMobile
-            ? {
-                maskImage: "linear-gradient(to right, transparent 0%, transparent 8%, black 55%, black 100%)",
-                WebkitMaskImage: "linear-gradient(to right, transparent 0%, transparent 8%, black 55%, black 100%)",
-              }
-            : {}),
-        }}
-        src={
-          isLight
-            ? "/videos/hero-intro-white-01.mp4"
-            : isMobile
-            ? "/videos/mobile-vertalis-dark-hero.mp4"
-            : "/videos/Vertalis-peptides-video-latest-dark-bg.mp4"
-        }
-        autoPlay
-        muted
-        loop
-        playsInline
+      {/* Static hero image, right-aligned — object-contain so the real
+          product photo is never cropped, whatever its native composition. */}
+      <img
+        src={HERO_IMAGE}
+        alt=""
+        className="absolute inset-0 z-0 w-full h-full object-contain object-right pointer-events-none"
         aria-hidden="true"
       />
 
@@ -150,17 +40,10 @@ export default function HeroSection() {
       {/* Grid */}
       <div className="absolute inset-0 z-[1] grid-overlay opacity-[0.07] pointer-events-none" />
 
-      {/* Left fade so text stays readable · softened to an eased curve
-          (more stops, gentler mid-transition) instead of a few hard steps,
-          so the video blends into the background rather than visibly
-          cutting off. Same rgb(var(--bg-900)) variable in both themes, so
-          this one gradient covers light and dark identically. */}
+      {/* Left fade so text stays readable over the hero image. */}
       <div className="absolute inset-0 z-[2] pointer-events-none" style={{
         background: "linear-gradient(to right, rgb(var(--bg-900) / 1) 0%, rgb(var(--bg-900) / 0.97) 16%, rgb(var(--bg-900) / 0.86) 30%, rgb(var(--bg-900) / 0.65) 42%, rgb(var(--bg-900) / 0.4) 54%, rgb(var(--bg-900) / 0.2) 64%, rgb(var(--bg-900) / 0.06) 74%, rgb(var(--bg-900) / 0) 84%)",
       }} />
-
-      {/* Particles */}
-      <canvas ref={canvasRef} className="absolute inset-0 z-[3] w-full h-full pointer-events-none" />
 
       {/* ── Text + visual panel · both anchored to the same 1440px grid so left/right gutters match exactly ── */}
       <div className="relative z-[8] h-full w-full max-w-[1440px] mx-auto px-6 md:px-10 flex items-center justify-between gap-10 lg:gap-16">
@@ -269,10 +152,9 @@ export default function HeroSection() {
 
         </div>
 
-        {/* Right side · the vial lives in the full-bleed background video
-            (positioned right, per the source clip) for both themes now, so
-            this column just reserves the matching gutter and hosts the
-            trust chip. */}
+        {/* Right side · the product photo lives in the full-bleed background
+            image (positioned right), so this column just reserves the
+            matching gutter and hosts the trust chip. */}
         <div className="hidden lg:block relative shrink-0" style={{ width: "48%", maxWidth: 760, height: "88%" }}>
           {/* Compact trust chip, floated over the bottom of the visual */}
           <div

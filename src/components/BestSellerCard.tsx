@@ -59,7 +59,7 @@ export default function BestSellerCard({
             alt={`${base.name} research peptide vial ${selected.spec}`}
             title={`${base.name} · ${selected.spec}`}
             fill
-            className="object-cover object-top group-hover:scale-105 transition-transform duration-700 ease-precision"
+            className="object-contain group-hover:scale-105 transition-transform duration-700 ease-precision"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
           />
           <div className="photo-fade absolute inset-0 bg-gradient-to-t from-background-900/90 via-background-900/20 to-transparent opacity-80 group-hover:opacity-60 transition-opacity duration-500"></div>

@@ -95,7 +95,7 @@ export default function ProductPageClient({ slug }: { slug: string }) {
                       src={product.image}
                       alt={product.imgAlt}
                       fill
-                      className="object-cover object-top"
+                      className="object-contain"
                       sizes="(max-width: 1024px) 100vw, 40vw"
                     />
                   ) : (

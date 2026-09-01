@@ -33,7 +33,7 @@ interface CartContextValue {
 
 const CartContext = createContext<CartContextValue | null>(null);
 
-const STORAGE_KEY = "vertalis-cart";
+const STORAGE_KEY = "longevity-cart";
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);

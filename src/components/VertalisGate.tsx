@@ -278,7 +278,7 @@ export default function VertalisGate({ children }: { children: React.ReactNode }
             <div className="absolute inset-0">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/images/vertalis-hero-bg-01.jpg"
+                src="https://longevitytech-lab.store/__l5e/assets-v1/f615b50a-f319-4693-895a-c1042d13c47e/BPC-157_vial.png"
                 alt=""
                 className="w-full h-full object-cover"
                 style={{ objectPosition: "center 30%", opacity: 0.28 }}

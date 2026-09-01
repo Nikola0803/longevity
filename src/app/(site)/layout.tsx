@@ -36,14 +36,14 @@ export const metadata: Metadata = {
     title: "LONGEVITY PEPTIDES · Research Peptides",
     description:
       "High-purity research peptides, independently tested by third-party labs. Every batch ships with a public, searchable Certificate of Analysis.",
-    images: [{ url: "/images/vertalis-cta-bg-01.jpg", width: 1200, height: 630, alt: "LONGEVITY PEPTIDES Research Peptides" }],
+    images: [{ url: "https://longevitytech-lab.store/__l5e/assets-v1/65c3b5d2-d359-4179-b379-666cae6b7a4e/main-cover.png", width: 1200, height: 630, alt: "LONGEVITY PEPTIDES Research Peptides" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "LONGEVITY PEPTIDES · Research Peptides",
     description:
       "High-purity research peptides, independently tested by third-party labs. Every batch ships with a public, searchable Certificate of Analysis.",
-    images: ["/images/vertalis-cta-bg-01.jpg"],
+    images: ["https://longevitytech-lab.store/__l5e/assets-v1/65c3b5d2-d359-4179-b379-666cae6b7a4e/main-cover.png"],
   },
   robots: { index: true, follow: true },
 };
