@@ -2,8 +2,8 @@
 /**
  * Plugin Name: Longevity Peptides Content Manager
  * Plugin URI:  https://longevitytech-lab.com
- * Description: Editable site content (CMS), headless auth, guest-order linking, marketing, and product-data tools for the Longevity Peptides storefront (a Next.js app hosted separately, talking to this site over REST). Also carries an optional built-in SPA router/uploader (upload a Vite/CRA dist/ zip and flip on "SPA takeover") for the rare case this WordPress install needs to serve the frontend directly instead - stays off unless explicitly enabled, and isn't needed for the current Next.js deployment.
- * Version:     2.2.0
+ * Description: Editable site content (CMS), headless auth, guest-order linking, marketing, and product-data tools for the Longevity Peptides storefront (a Vite/React app hosted separately, talking to this site over REST). Also carries an optional built-in SPA router/uploader (upload a Vite/CRA dist/ zip and flip on "SPA takeover") for the rare case this WordPress install needs to serve the frontend directly instead - stays off unless explicitly enabled, and isn't needed for the current Next.js deployment.
+ * Version:     2.3.0
  * Author:      Longevity Peptides
  * Text Domain: longevity-content-manager
  * Requires WP: 6.0
@@ -12,7 +12,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'LPCM_VERSION', '2.2.0' );
+define( 'LPCM_VERSION', '2.3.0' );
 define( 'LPCM_PLUGIN_FILE', __FILE__ );
 define( 'LPCM_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'LPCM_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -29,6 +29,8 @@ function lpcm_require_includes() {
 		'includes/class-marketing.php',
 		'includes/class-order-hooks.php',
 		'includes/class-product-tools.php',
+		'includes/class-csv-importer.php',
+		'includes/class-catalog-api.php',
 		'includes/class-cms.php',
 	];
 	foreach ( $includes as $file ) {
@@ -49,6 +51,8 @@ function lpcm_init_plugin() {
 	LPCM_Marketing::init();
 	LPCM_Order_Hooks::init();
 	LPCM_Product_Tools::init();
+	LPCM_CSV_Importer::init();
+	LPCM_Catalog_API::init();
 	LPCM_CMS::init();
 }
 add_action( 'plugins_loaded', 'lpcm_init_plugin', 1 );
