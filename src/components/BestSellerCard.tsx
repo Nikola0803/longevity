@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { getProduct, getVariants, getVariantLabel, getRating } from "@/lib/product-types";
+import { getProduct, getVariants, getVariantLabel, getPackVariants, getPackLabel, getRating } from "@/lib/product-types";
 import { useProducts } from "@/lib/products-context";
 import { useCart } from "@/lib/cart-context";
 import StarRating from "@/components/StarRating";
@@ -35,7 +35,8 @@ export default function BestSellerCard({
 
   if (!base) return null;
 
-  const selected = variants.find((v) => v.slug === selectedSlug) ?? base;
+  const selected = products.find((p) => p.slug === selectedSlug) ?? base;
+  const packVariants = getPackVariants(products, selected);
   const rating = getRating(base);
   const href = `/product/${selected.slug}`;
 
@@ -127,8 +128,31 @@ export default function BestSellerCard({
         </Link>
 
         {variants.length > 1 ? (
-          <div className="flex flex-wrap gap-1.5 mb-4">
+          <div className="flex flex-wrap gap-1.5 mb-2">
             {variants.map((v) => (
+              <button
+                key={v.slug}
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setSelectedSlug(v.slug);
+                }}
+                className={`px-2.5 py-1 rounded-md font-mono text-[10px] tracking-wide border transition-all duration-300 ease-precision cursor-pointer ${
+                  v.spec === selected.spec
+                    ? "bg-primary-500 text-background-900 border-primary-500"
+                    : "bg-background-100 text-foreground-400 border-background-200/60 hover:border-primary-500/50 hover:text-primary-500"
+                }`}
+              >
+                {getVariantLabel(v)}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <p className="font-mono text-[11px] text-foreground-500 mb-2">{selected.spec}</p>
+        )}
+        {packVariants.length > 1 && (
+          <div className="flex flex-wrap gap-1.5 mb-4">
+            {packVariants.map((v) => (
               <button
                 key={v.slug}
                 type="button"
@@ -142,12 +166,10 @@ export default function BestSellerCard({
                     : "bg-background-100 text-foreground-400 border-background-200/60 hover:border-primary-500/50 hover:text-primary-500"
                 }`}
               >
-                {getVariantLabel(v)}
+                {getPackLabel(v)}
               </button>
             ))}
           </div>
-        ) : (
-          <p className="font-mono text-[11px] text-foreground-500 mb-4">{selected.spec}</p>
         )}
 
         <div className="flex items-center justify-between pt-4 mb-4 border-t border-background-200/60">

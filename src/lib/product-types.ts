@@ -36,6 +36,10 @@ export interface Product {
    * configured — see src/lib/woo-store-api.ts. */
   wooProductId?: number;
   wooVariationId?: number;
+  /** Vials per unit sold — 1 for a single vial, 10 for a bulk 10-pack kit.
+   * Absent is treated as 1. A pack entry shares `name` and `spec` (dose)
+   * with its single-vial counterpart but has its own slug/price/ids. */
+  packSize?: number;
 }
 
 const IN_STOCK = "text-secondary-500 shadow-[0_0_5px_1px_currentColor]";
@@ -100,10 +104,11 @@ export function getRating(product: Product): { stars: number; count: number } {
   return { stars, count };
 }
 
-/** All size/variant entries that share a product name, sorted smallest to largest dose. */
+/** All dose/size entries that share a product name, sorted smallest to largest dose.
+ * Pack-size kits (see getPackVariants) are excluded — this is the dose row only. */
 export function getVariants(products: Product[], name: string): Product[] {
   return products
-    .filter((p) => p.name === name)
+    .filter((p) => p.name === name && (p.packSize ?? 1) === 1)
     .sort((a, b) => parseFloat(a.spec) - parseFloat(b.spec));
 }
 
@@ -112,6 +117,19 @@ export function getVariantLabel(p: Product): string {
   if (p.shortLabel) return p.shortLabel.replace(/\s+/g, "");
   const match = p.spec.match(/^([\d.]+)\s*(mg|mL|g)/i);
   return match ? `${match[1]}${match[2]}` : p.spec;
+}
+
+/** Single-vial vs bulk-kit entries for one exact dose (same name + spec), smallest pack first. */
+export function getPackVariants(products: Product[], product: Product): Product[] {
+  return products
+    .filter((p) => p.name === product.name && p.spec === product.spec)
+    .sort((a, b) => (a.packSize ?? 1) - (b.packSize ?? 1));
+}
+
+/** Pill label for a pack-size entry, e.g. "1 Vial", "10-Pack Kit". */
+export function getPackLabel(p: Product): string {
+  const n = p.packSize ?? 1;
+  return n <= 1 ? "1 Vial" : `${n}-Pack Kit`;
 }
 
 export function getProduct(products: Product[], slug: string): Product | undefined {
