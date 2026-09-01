@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 
 const MOCK_DB: Record<string, { compound: string; purity: string; date: string; result: "PASS" | "FAIL" }> = {
   "NVR-24-1108-A": { compound: "Semaglutide", purity: "99.42%", date: "2024.11.08", result: "PASS" },
@@ -113,7 +113,7 @@ export default function CoaLookup() {
                   <p className="font-mono text-foreground-200">{result.date}</p>
                 </div>
               </div>
-              <Link href={`/coa/${query.trim().toUpperCase()}`} className="mt-4 inline-flex items-center gap-1.5 font-mono text-[11px] text-primary-500 hover:text-primary-400 transition-colors">
+              <Link to={`/coa/${query.trim().toUpperCase()}`} className="mt-4 inline-flex items-center gap-1.5 font-mono text-[11px] text-primary-500 hover:text-primary-400 transition-colors">
                 Download full COA <i className="ri-download-line"></i>
               </Link>
             </div>
@@ -150,7 +150,7 @@ export default function CoaLookup() {
 
         <div className="flex items-center justify-between px-5 py-2.5 border-t border-background-200/60 bg-background-900/40">
           <span className="font-mono text-[10px] text-foreground-600">2,847 batches archived</span>
-          <Link href="/coa" className="font-mono text-[10px] text-primary-500 hover:text-primary-400 transition-colors flex items-center gap-1">
+          <Link to="/coa" className="font-mono text-[10px] text-primary-500 hover:text-primary-400 transition-colors flex items-center gap-1">
             BROWSE ARCHIVE<i className="ri-arrow-right-line"></i>
           </Link>
         </div>

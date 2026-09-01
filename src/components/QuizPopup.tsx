@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 
 /**
  * Floating "not sure what you need?" quiz launcher, shown site-wide.
@@ -54,7 +54,7 @@ export default function QuizPopup() {
             </p>
 
             <Link
-              href="/quiz"
+              to="/quiz"
               onClick={() => setOpen(false)}
               className="mt-5 flex items-center justify-center h-11 rounded-md bg-primary-500 text-background-900 text-[13px] font-semibold hover:bg-primary-400 transition-all duration-300 ease-precision cursor-pointer"
             >

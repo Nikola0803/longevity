@@ -17,7 +17,7 @@
  */
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import PromoBanner from "@/components/PromoBanner";
 import Footer from "@/components/Footer";
@@ -263,7 +263,7 @@ export default function AccountPage() {
                   <div className="p-8 rounded-lg border border-background-200/60 bg-background-900/50 text-center">
                     <i className="ri-shopping-bag-3-line text-[24px] text-foreground-500 mb-3 inline-block"></i>
                     <p className="text-[13px] text-foreground-400">You haven&apos;t placed any orders yet.</p>
-                    <Link href="/shop" className="inline-block mt-4 text-[12px] font-medium text-primary-500 hover:text-primary-400 transition-colors">
+                    <Link to="/shop" className="inline-block mt-4 text-[12px] font-medium text-primary-500 hover:text-primary-400 transition-colors">
                       Browse the Catalog →
                     </Link>
                   </div>
@@ -300,7 +300,7 @@ export default function AccountPage() {
                     Already buying from us? Earn commission referring other researchers — separate account, own dashboard.
                   </p>
                   <Link
-                    href="/affiliate"
+                    to="/affiliate"
                     className="inline-flex items-center gap-2 text-[12px] font-medium text-primary-500 hover:text-primary-400 transition-colors"
                   >
                     Learn More <i className="ri-arrow-right-line text-[13px]"></i>

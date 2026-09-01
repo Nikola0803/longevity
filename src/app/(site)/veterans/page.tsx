@@ -1,14 +1,6 @@
-import type { Metadata } from "next";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import PromoBanner from "@/components/PromoBanner";
-
-export const metadata: Metadata = {
-  title: "Military, Veterans & First Responders Discount",
-  description:
-    "Active military, veterans, and first responders get 23% off every order, for life. A permanent thank-you, not a one-time promo code.",
-  alternates: { canonical: "/veterans" },
-};
 
 const BRANCHES = [
   { icon: "ri-shield-star-line", label: "Active Duty & Reserve" },
@@ -179,7 +171,7 @@ export default function VeteransPage() {
               <p className="text-[14px] text-foreground-500">Reach out and mention this page. We&#39;ll walk you through it.</p>
             </div>
             <Link
-              href="/contact"
+              to="/contact"
               className="shrink-0 h-10 px-6 rounded-md bg-primary-500 text-background-900 text-[13px] font-semibold hover:bg-primary-400 transition-all cursor-pointer inline-flex items-center gap-2"
             >
               <i className="ri-mail-line text-[14px]"></i>Contact Us

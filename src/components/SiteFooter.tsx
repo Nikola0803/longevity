@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "react-router-dom";
 
 const SHOP_LINKS = [
   { label: "Peptides", href: "/shop/peptides" },
@@ -37,7 +37,7 @@ function NavCol({ title, links }: { title: string; links: { label: string; href:
       <ul className="space-y-2.5">
         {links.map((l) => (
           <li key={l.href + l.label}>
-            <Link href={l.href} className="text-[13px] text-foreground-300 hover:text-primary-500 transition-colors">
+            <Link to={l.href} className="text-[13px] text-foreground-300 hover:text-primary-500 transition-colors">
               {l.label}
             </Link>
           </li>

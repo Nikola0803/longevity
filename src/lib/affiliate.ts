@@ -59,15 +59,8 @@ export function captureReferral(): void {
 
   setCookie(COOKIE_NAME, code, COOKIE_DAYS);
 
-  fetch("/api/affiliate/track-click", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      ref_code: code,
-      landing_url: window.location.pathname + window.location.search,
-    }),
-    keepalive: true,
-  }).catch(() => {
-    /* best-effort — a failed click ping shouldn't affect the visitor */
-  });
+  // Click-tracking analytics ping has no backend yet (there's no longer a
+  // Next.js API route to receive it) — wire this to the WordPress site's
+  // own REST API if/when real affiliate click analytics are needed. The
+  // cookie above is what actually matters for order attribution.
 }

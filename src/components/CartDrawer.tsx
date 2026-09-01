@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 import { useCart } from "@/lib/cart-context";
 import { useProducts } from "@/lib/products-context";
 
@@ -9,7 +9,7 @@ const BAC_SLUGS = ["nvr-bac-5", "nvr-bac-10"];
 export default function CartDrawer() {
   const { items, isOpen, closeCart, addItem, removeItem, setQty, subtotal, count } = useCart();
   const products = useProducts();
-  const router = useRouter();
+  const navigate = useNavigate();
 
   if (!isOpen) return null;
 
@@ -19,7 +19,7 @@ export default function CartDrawer() {
 
   const goCheckout = () => {
     closeCart();
-    router.push("/checkout");
+    navigate("/checkout");
   };
 
   return (
@@ -58,7 +58,7 @@ export default function CartDrawer() {
               <button
                 onClick={() => {
                   closeCart();
-                  router.push("/shop");
+                  navigate("/shop");
                 }}
                 className="h-10 px-6 rounded-md bg-primary-500 text-background-900 text-[12px] font-semibold hover:bg-primary-400 transition-all cursor-pointer whitespace-nowrap"
               >

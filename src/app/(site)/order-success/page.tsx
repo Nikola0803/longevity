@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link, useSearchParams } from "react-router-dom";
 import Header from "@/components/Header";
 import PromoBanner from "@/components/PromoBanner";
 import Footer from "@/components/Footer";
@@ -11,13 +11,9 @@ import Footer from "@/components/Footer";
  * WordPress directly, not by the customer arriving here, so this page just
  * displays the order reference — it never marks anything paid itself.
  */
-export default async function OrderSuccessPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-}) {
-  const params = await searchParams;
-  const orderNumber = typeof params.order === "string" ? params.order : "";
+export default function OrderSuccessPage() {
+  const [searchParams] = useSearchParams();
+  const orderNumber = searchParams.get("order") ?? "";
 
   return (
     <div className="min-h-screen bg-background-800 text-foreground-100">
@@ -45,7 +41,7 @@ export default async function OrderSuccessPage({
           </p>
 
           <Link
-            href="/shop"
+            to="/shop"
             className="h-11 px-6 rounded-md bg-primary-500 text-background-900 text-[13px] font-semibold hover:bg-primary-400 transition-all cursor-pointer whitespace-nowrap inline-flex items-center justify-center"
           >
             Back to Catalog

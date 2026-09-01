@@ -1,15 +1,14 @@
-"use client";
-
 /**
- * Client-side product catalog, sourced from the CRM/CMS database via
- * /api/store/products — replaces the old static `PRODUCTS` array import.
- * Fetched once per page load and shared through context so every client
- * component (cart, search, product cards, checkout upsells) sees the same
- * live data an operator just edited in /admin/products.
+ * Client-side product catalog, sourced directly from WooCommerce's public
+ * Store API (see lib/storefront-catalog.ts) — falls back to the static
+ * PRODUCTS array when Woo isn't configured/reachable. Fetched once per
+ * page load and shared through context so every component (cart, search,
+ * product cards, checkout upsells) sees the same catalog.
  */
 
 import { createContext, useContext, useEffect, useState } from "react";
 import type { Product } from "@/lib/product-types";
+import { getAllCatalogProducts } from "@/lib/storefront-catalog";
 
 interface ProductsContextValue {
   products: Product[];
@@ -24,10 +23,9 @@ export function ProductsProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     let cancelled = false;
-    fetch("/api/store/products")
-      .then((r) => r.json())
+    getAllCatalogProducts()
       .then((data) => {
-        if (!cancelled && Array.isArray(data)) setProducts(data);
+        if (!cancelled) setProducts(data);
       })
       .catch(() => {})
       .finally(() => {

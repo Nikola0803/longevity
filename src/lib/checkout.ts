@@ -1,70 +1,42 @@
-import "server-only";
-
 /**
- * WooCommerce Store API bridge — this is what actually makes the headless
- * Next.js checkout a REAL checkout instead of a stub. Unlike wc/v3 (REST
- * API, used read-only elsewhere in this app for the product catalog), the
- * Store API is what WooCommerce Blocks' own checkout uses internally: it
- * runs the real checkout pipeline — creates the order AND calls the chosen
- * payment gateway's process_payment() — so calling it here gets us the
- * NiftiPay plugin's redirect URL (payUrl) back, exactly as if a shopper had
+ * WooCommerce Store API checkout — runs directly in the browser now (this
+ * is a static Vite SPA with no Node server of its own), calling the
+ * WordPress site's Store API cross-origin. This is what makes checkout
+ * REAL: Store API is what WooCommerce Blocks' own checkout uses
+ * internally — it runs the actual checkout pipeline (creates the order AND
+ * calls the chosen payment gateway's process_payment()) and hands back the
+ * NiftiPay plugin's redirect URL (payUrl), exactly as if a shopper had
  * checked out on woocommerce.com's own checkout page.
  *
- * wc/v3 (used in storefront-catalog.ts) cannot do this — it only creates an
- * order *record*, it never runs gateway processing, so it can't produce a
- * payment redirect on its own.
- *
- * No consumer key/secret needed here — the Store API is the same public,
- * session-based API a browser hitting the WooCommerce site directly would
- * use. We stand in for that browser for exactly one checkout request span:
- * open a session (GET /cart), add items, submit checkout, done. Nothing is
- * persisted across separate HTTP requests to our own Next.js server —
- * each checkout submission builds and tears down its own Woo cart session.
+ * Cross-origin requirement: the browser needs `credentials: "include"` to
+ * carry the Woo session cookie, which means the WordPress site must send
+ * CORS headers back — Access-Control-Allow-Origin set to this storefront's
+ * exact origin (not "*", which is incompatible with credentialed
+ * requests), Access-Control-Allow-Credentials: true, and
+ * Access-Control-Expose-Headers including the nonce header so this code
+ * can read it. See wordpress-plugin/longevity-content-manager's CORS setup
+ * (class-cors.php) — it reads the allowed origin from the same
+ * `storefront_url` setting the NiftiPay plugin already exposes.
  */
 
-interface WooSession {
-  cookies: string[];
+const WOO_STORE_URL = (import.meta.env.VITE_WOO_STORE_URL as string | undefined)?.replace(/\/$/, "");
+
+interface StoreApiResult {
+  res: Response;
+  data: unknown;
   nonce: string | null;
 }
 
-function baseUrl(): string {
-  const url = process.env.WOO_STORE_URL;
-  if (!url) throw new Error("WOO_STORE_URL is not configured");
-  return url.replace(/\/$/, "");
-}
-
-function collectSetCookies(res: Response): string[] {
-  // Node's fetch/Headers folds multiple Set-Cookie into one header in some
-  // runtimes; getSetCookie() (Node 18.14+/undici) is the reliable path.
-  const anyHeaders = res.headers as unknown as { getSetCookie?: () => string[] };
-  if (typeof anyHeaders.getSetCookie === "function") {
-    return anyHeaders.getSetCookie();
-  }
-  const single = res.headers.get("set-cookie");
-  return single ? [single] : [];
-}
-
-function mergeCookies(existing: string[], incoming: string[]): string[] {
-  // Keep it simple: replace any cookie with the same name, append new ones.
-  const byName = new Map<string, string>();
-  for (const c of [...existing, ...incoming]) {
-    const [pair] = c.split(";");
-    const name = pair.split("=")[0]?.trim();
-    if (name) byName.set(name, pair.trim());
-  }
-  return Array.from(byName.values());
-}
-
 async function storeApiFetch(
-  session: WooSession,
   path: string,
-  init: { method?: string; body?: unknown } = {},
-): Promise<{ res: Response; data: unknown }> {
-  const headers: Record<string, string> = {
-    Accept: "application/json",
-  };
-  if (session.cookies.length) headers.Cookie = session.cookies.join("; ");
-  if (session.nonce) headers["Nonce"] = session.nonce;
+  init: { method?: string; body?: unknown; nonce?: string | null } = {},
+): Promise<StoreApiResult> {
+  if (!WOO_STORE_URL) {
+    throw new Error("VITE_WOO_STORE_URL is not configured");
+  }
+
+  const headers: Record<string, string> = { Accept: "application/json" };
+  if (init.nonce) headers["Nonce"] = init.nonce;
 
   let body: string | undefined;
   if (init.body !== undefined) {
@@ -72,16 +44,14 @@ async function storeApiFetch(
     body = JSON.stringify(init.body);
   }
 
-  const res = await fetch(`${baseUrl()}/wp-json/wc/store/v1${path}`, {
+  const res = await fetch(`${WOO_STORE_URL}/wp-json/wc/store/v1${path}`, {
     method: init.method ?? "GET",
     headers,
     body,
-    cache: "no-store",
+    credentials: "include",
   });
 
-  session.cookies = mergeCookies(session.cookies, collectSetCookies(res));
   const nonce = res.headers.get("x-wc-store-api-nonce") ?? res.headers.get("nonce");
-  if (nonce) session.nonce = nonce;
 
   const text = await res.text();
   let data: unknown = null;
@@ -91,7 +61,7 @@ async function storeApiFetch(
     data = { raw: text };
   }
 
-  return { res, data };
+  return { res, data, nonce };
 }
 
 export interface WooCheckoutItem {
@@ -130,17 +100,19 @@ export async function wooHeadlessCheckout(
   billing: WooBillingAddress,
   customerNote?: string,
 ): Promise<WooCheckoutResult> {
+  if (!WOO_STORE_URL) {
+    return { ok: false, error: "Checkout isn't connected to WooCommerce yet (VITE_WOO_STORE_URL not configured)." };
+  }
   if (!items.length) {
     return { ok: false, error: "Cart is empty." };
   }
 
-  const session: WooSession = { cookies: [], nonce: null };
-
   // 1. Open a cart session and get the initial nonce.
-  const cartRes = await storeApiFetch(session, "/cart");
+  const cartRes = await storeApiFetch("/cart");
   if (!cartRes.res.ok) {
     return { ok: false, error: "Could not reach the store to start checkout.", details: cartRes.data };
   }
+  let nonce = cartRes.nonce;
 
   // 2. Add every line item.
   for (const item of items) {
@@ -150,8 +122,9 @@ export async function wooHeadlessCheckout(
         error: "One or more items in your cart aren't linked to a live product yet — please refresh the shop and try again.",
       };
     }
-    const addRes = await storeApiFetch(session, "/cart/add-item", {
+    const addRes = await storeApiFetch("/cart/add-item", {
       method: "POST",
+      nonce,
       body: {
         // WooCommerce treats a product variation as its own product id for
         // add-to-cart purposes, so this is a single `id`, not a separate
@@ -162,6 +135,7 @@ export async function wooHeadlessCheckout(
         quantity: item.qty,
       },
     });
+    if (addRes.nonce) nonce = addRes.nonce;
     if (!addRes.res.ok) {
       const err = (addRes.data as { message?: string })?.message ?? "Could not add an item to the cart.";
       return { ok: false, error: err, details: addRes.data };
@@ -170,8 +144,9 @@ export async function wooHeadlessCheckout(
 
   // 3. Submit checkout with the NiftiPay gateway selected. The gateway id
   // ("niftipay") must match WC_Gateway_Niftipay::$id in the WordPress plugin.
-  const checkoutRes = await storeApiFetch(session, "/checkout", {
+  const checkoutRes = await storeApiFetch("/checkout", {
     method: "POST",
+    nonce,
     body: {
       billing_address: { ...billing, address_2: "" },
       shipping_address: { ...billing, address_2: "" },

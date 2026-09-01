@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams } from "react-router-dom";
 import Header from "@/components/Header";
 import PromoBanner from "@/components/PromoBanner";
 import Footer from "@/components/Footer";
@@ -31,7 +31,7 @@ const FORMATS = [
 ];
 
 function ShopPageInner() {
-  const searchParams = useSearchParams();
+  const [searchParams] = useSearchParams();
   const products = useProducts();
   const VISIBLE = useMemo(() => products.filter((p) => !p.hidden), [products]);
   const [activeCategory, setActiveCategory] = useState("all");

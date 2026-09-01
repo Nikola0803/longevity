@@ -33,7 +33,7 @@ export interface Product {
    * required to add this item to a real WooCommerce Store API cart at
    * checkout. Absent for fallback-catalog products (no live Woo product
    * behind them), which is exactly why checkout requires Woo to be
-   * configured — see src/lib/woo-store-api.ts. */
+   * configured — see src/lib/checkout.ts. */
   wooProductId?: number;
   wooVariationId?: number;
   /** Vials per unit sold — 1 for a single vial, 10 for a bulk 10-pack kit.

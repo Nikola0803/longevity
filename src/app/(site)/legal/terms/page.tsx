@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import LegalShell from "@/components/legal/LegalShell";
 import {
   LegalSection,
@@ -8,12 +7,6 @@ import {
   ContactCard,
 } from "@/components/legal/LegalUI";
 import { SITE, LEGAL_ROUTES } from "@/data/site-config";
-
-export const metadata: Metadata = {
-  title: "Terms of Service · LONGEVITY PEPTIDES",
-  description:
-    "The terms and conditions governing use of the Longevity Peptides website and the purchase of research-use-only products.",
-};
 
 const related = [
   { label: "Privacy Policy", href: LEGAL_ROUTES.privacy },

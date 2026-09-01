@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "react-router-dom";
 
 const TEAL   = "rgb(var(--primary-500))";
 const TEAL_D = "rgb(var(--hero-dim))";
@@ -136,13 +136,13 @@ export default function HeroSection() {
 
           {/* CTAs */}
           <div className="flex flex-wrap items-center gap-5" style={{ marginBottom: 30, animation: "nvFadeUp 0.9s ease forwards 1.3s", opacity: 0 }}>
-            <Link href="/shop" className="inline-flex items-center gap-3 transition-all duration-200 whitespace-nowrap"
+            <Link to="/shop" className="inline-flex items-center gap-3 transition-all duration-200 whitespace-nowrap"
               style={{ background: TEAL, color: BG, padding: "13px 30px", fontFamily: "'Space Grotesk',sans-serif", fontWeight: 700, fontSize: 13, letterSpacing: "0.15em", textTransform: "uppercase" }}
               onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = TEAL_L; }}
               onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = TEAL; }}>
               Shop Catalog <i className="ri-arrow-right-line"/>
             </Link>
-            <Link href="/coa" className="transition-all duration-200 whitespace-nowrap"
+            <Link to="/coa" className="transition-all duration-200 whitespace-nowrap"
               style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 11, letterSpacing: "0.14em", color: TEAL_D, borderBottom: `1.5px solid rgb(var(--primary-500) / 0.28)`, paddingBottom: 2 }}
               onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = TEAL; }}
               onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = TEAL_D; }}>
@@ -162,7 +162,7 @@ export default function HeroSection() {
             style={{ animation: "nvFadeUp 0.9s ease forwards 1.3s", opacity: 0 }}
           >
             <Link
-              href="/coa"
+              to="/coa"
               className="flex items-center justify-between gap-4 rounded-xl border border-background-200/60 bg-background-900/70 backdrop-blur-sm px-6 py-4 hover:bg-primary-500/[0.05] transition-colors duration-300 cursor-pointer"
               style={{ boxShadow: "0 30px 80px -24px rgba(0,0,0,0.55)" }}
             >

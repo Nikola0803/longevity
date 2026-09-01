@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import Image from "next/image";
+import { Link } from "react-router-dom";
+import Image from "@/components/Image";
 import { getProduct, getVariants, getVariantLabel, getPackVariants, getPackLabel, getRating } from "@/lib/product-types";
 import { useProducts } from "@/lib/products-context";
 import { useCart } from "@/lib/cart-context";
@@ -53,7 +53,7 @@ export default function BestSellerCard({
       className="group relative rounded-xl overflow-hidden bg-background-900/70 border border-background-200/60 hover:border-primary-500/40 transition-all duration-500 ease-precision cursor-pointer"
       data-product-shop="true"
     >
-      <Link href={href} className="block">
+      <Link to={href} className="block">
         <div className="relative aspect-[4/5] overflow-hidden bg-background-100">
           <Image
             src={selected.image}
@@ -98,7 +98,7 @@ export default function BestSellerCard({
           </button>
         </div>
 
-        <Link href={href} className="block">
+        <Link to={href} className="block">
           <div className="flex items-start justify-between gap-3 mb-1.5">
             <h3 className="font-display text-[16px] leading-tight text-foreground-100 group-hover:text-primary-500 transition-colors duration-500">
               {base.name}

@@ -23,6 +23,7 @@ function lpcm_require_includes() {
 	$includes = [
 		'includes/class-uploader.php',
 		'includes/class-spa-router.php',
+		'includes/class-cors.php',
 		'includes/class-auth.php',
 		'includes/class-settings.php',
 		'includes/class-marketing.php',
@@ -42,6 +43,7 @@ lpcm_require_includes();
 function lpcm_init_plugin() {
 	LPCM_Uploader::init();
 	LPCM_SPA_Router::init();
+	LPCM_Cors::init();
 	LPCM_Auth::init();
 	LPCM_Settings::init();
 	LPCM_Marketing::init();
