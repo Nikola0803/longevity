@@ -38,6 +38,19 @@ class LPCM_Cors {
 	public static function add_cors_headers() {
 		remove_filter( 'rest_pre_serve_request', 'rest_send_cors_headers' );
 		add_filter( 'rest_pre_serve_request', function ( $value ) {
+			// The public catalog read (GET /longevity/v1/catalog) carries no
+			// cookies/credentials and returns nothing but published product
+			// data, so it's safe to allow from any origin - the storefront
+			// domain doesn't need to be configured first just to list
+			// products. Cart/checkout (Store API) still needs the strict,
+			// single-origin, credentialed CORS below: that's what actually
+			// carries the Woo session cookie.
+			if ( isset( $_SERVER['REQUEST_URI'] ) && strpos( $_SERVER['REQUEST_URI'], '/wp-json/longevity/v1/catalog' ) !== false ) {
+				header( 'Access-Control-Allow-Origin: *' );
+				header( 'Access-Control-Allow-Methods: GET' );
+				return $value;
+			}
+
 			$allowed = self::allowed_origin();
 			$request_origin = get_http_origin();
 
