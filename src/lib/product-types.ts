@@ -133,5 +133,13 @@ export function getPackLabel(p: Product): string {
 }
 
 export function getProduct(products: Product[], slug: string): Product | undefined {
-  return products.find((p) => p.slug === slug);
+  const exact = products.find((p) => p.slug === slug);
+  if (exact) return exact;
+  // The static fallback catalog's slugs are bare compound names
+  // ("tirzepatide", "bpc-157"). The live WooCommerce catalog only ever
+  // has per-dose/per-pack slugs ("tirzepatide-5mg", "bpc-157-kit-5mg-10pack") -
+  // there is no bare-compound product to exact-match against. Callers that
+  // reference a bare compound name (best-seller picks, mega menu links)
+  // still resolve correctly against the live catalog via this prefix match.
+  return products.find((p) => p.slug.startsWith(`${slug}-`));
 }
