@@ -426,6 +426,13 @@ class LPCM_CSV_Importer {
 			$original_id = $assoc['ID'] ?? '';
 			if ( $original_id !== '' ) {
 				$id_map[ $original_id ] = $product_id;
+				// Also persisted as postmeta (independent of the in-request
+				// $id_map / transient): if a later AJAX step's process gets
+				// killed by a reverse-proxy or PHP-FPM timeout - e.g. from a
+				// slow/dead image host - before it can save the updated
+				// $id_map back to the transient, this row is still findable
+				// by attach_variations()'s DB fallback below.
+				update_post_meta( $product_id, '_lpcm_csv_original_id', $original_id );
 			}
 
 			$image_url = $assoc['Images'] ?? '';
@@ -444,7 +451,7 @@ class LPCM_CSV_Importer {
 
 	/** Attaches every collected dose-variation row to its real parent product ID. Returns a { ok, msg } result row. */
 	private static function attach_variations( string $original_parent_id, array $rows, array $id_map ): array {
-		$parent_id = $id_map[ $original_parent_id ] ?? 0;
+		$parent_id = $id_map[ $original_parent_id ] ?? self::find_product_id_by_original_csv_id( $original_parent_id );
 		if ( ! $parent_id ) {
 			return [ 'ok' => false, 'msg' => "Variation rows referencing original ID {$original_parent_id} — parent product not found, skipped." ];
 		}
@@ -489,6 +496,19 @@ class LPCM_CSV_Importer {
 		}
 
 		return [ 'ok' => true, 'msg' => $parent->get_name() . ' — ' . count( $rows ) . ' dose variation(s) attached.' ];
+	}
+
+	/** Fallback for attach_variations() when the in-request $id_map is missing an entry (e.g. the step that created the parent was killed by a timeout before it could persist $id_map to the job transient). Looks the parent up by the original CSV row ID recorded as postmeta when it was created. */
+	private static function find_product_id_by_original_csv_id( string $original_id ): int {
+		$posts = get_posts( [
+			'post_type'   => 'product',
+			'post_status' => [ 'publish', 'draft', 'pending', 'private' ],
+			'numberposts' => 1,
+			'fields'      => 'ids',
+			'meta_key'    => '_lpcm_csv_original_id',
+			'meta_value'  => $original_id,
+		] );
+		return $posts[0] ?? 0;
 	}
 
 	private static function find_product_id_by_slug( string $slug ): int {
@@ -540,7 +560,10 @@ class LPCM_CSV_Importer {
 		require_once ABSPATH . 'wp-admin/includes/file.php';
 		require_once ABSPATH . 'wp-admin/includes/image.php';
 
-		$tmp = download_url( $image_url, 15 );
+		// Short timeout: a dead/unreachable image host must fail fast, not
+		// stall the whole batch (and risk the request being killed by a
+		// reverse-proxy or PHP-FPM timeout before it can save progress).
+		$tmp = download_url( $image_url, 5 );
 		if ( is_wp_error( $tmp ) ) {
 			return $tmp;
 		}
